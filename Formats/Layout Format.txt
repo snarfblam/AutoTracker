@@ -1,0 +1,121 @@
+﻿Tracker layout file format.
+
+-File may included embedded resource files, encoded in Base64.
+    -Embedded files may be referenced by prefixing the path with "!/" or "!\", e.g. { "background" : "!/main-bg.png"}
+-As noted below, some elements may optionaly "share data". Changes made to one object affect all objects that share data.
+-Multiple backgrounds may be specified, each corrosponding to a "level"
+-"Indicators" are icons that support multiple "levels". Each level uses a different background image as a source.
+    -The default level, 0, uses the default background, i.e. the first in the list.
+    -Each successive level grabs the icon from the next background in the list.
+    -Indicators in different layouts that share a name share data.
+-Maps are more complex entities that behave as a grid where each cell can function as an indicator and/or have a marker overlaid
+    -Map background/indicator tiles should be opaque. For transparency, use markers.
+    -Maps use named sets of markers.
+        -A marker set acts as a layer over a map. Each cell in the map can be empty or contain one marker with a level-based image
+            -Multiple markers in the same location but may be problematic as they can't be manipulated individually
+            -The level of the marker is independant from the level in the underlying map
+        -Each named set of markers can specify an initial state (for example, a marker could be placed on the map for each item in the game world)
+        -Sets may be shared across multiple maps and/or multiple layouts
+        -A marker set name can be used without defining the markers. It will simply be treated as a set that is initially empty.
+        -A more technical explanation of markers: they have the following requirements and support the following operations.
+            -Each named marker set must be defined.
+            -
+    -Multiple markers in the same location will be drawn in the order that they're added. 
+        -To change the order markers in the same location are drawn, remove all markers in the same location and re-add them in the desired order, bottom to top.
+    -Maps can also use a named state for indicators. Mutiple maps with the same state name will share data (indicator levels) to the extent that their grids overlap.
+        -For example, a small layout with a minimap can share map level data with an expanded map view
+    -Marker levels and indicator levels can be used for any desired purpose. E.g.
+        -Map indicator levels could be used to indicate whether a location has been visited
+        -Map marker levels could be used to indicate what, if anything, is found at a map location (0 = save location, 1 = health refill, 2 = shop, etc)
+    -The tracker may automatically maniplulate map cell levels and markers, allow the user to manually do so, or both
+    -A map may either use the background on which it resides, or specify its own
+        -If it uses the underlying background, it will use the region over which it sets
+        -If it specifies its own background, it will align the top-left corner the background image with the top-left of the map
+-A file may specify one layout, or many. In the case of many, the tracker may allow automatic, manual, or both modes of layout selection
+-While many aspects of the file are open-ended, it is perfectly legitimite for a tracker to require properties that are listed as optional here
+    - E.g. a tracker very well may be for a specific game and thus have requirements for which backgrounds, maps, and indicators are present.
+-"Identifiers" in tracker layout files must not start with an underscore.
+    - This includes indicators, maps, embedded files, and state names, or, essentially, everything.
+    - Trackers are encouraged to use underscore-prefixed
+-Notes about graphics:
+    - Layout and map backgrounds should be fully opaque
+    - Markers may use semi-transparency
+    - Indicators should not overlap with eachother or maps
+
+-This specification defines data structes to be encoded in json. Data structure names are wrapped in <angle brackets>
+-This specification is not in JSON format. The file is expected to be proper JSON.
+-Optional properties will have a question mark appended, e.g. "optionalProperty? number"
+-Some objects are allowed to have arbitrarily named properties, displayed in (parens)
+    -Typically multiple such properties will be allowed in such objects, in which case
+     there will be an following the property specification, e.g. "expectedProperty: { (abritrary)...: string }"
+-C-style comments are used to document properties
+
+<File>: {
+    files?: {                               //  Image files may be embedded
+        (name)...: string                   //      Property name is the filename, and contents should be Base64-encoded 
+    },
+    layouts: {
+        (name)...: <Layout>
+    },
+    maps: {
+        (name)...: <Map>
+    },
+    markerSets: {
+        (name)...: <MarkerSet>
+    }
+}
+
+<Layout>: {
+    backgrounds: string[],                  // At least one image filename. If there are multiple, they are used for successive "levels" for item indicators.
+    indicators: {                           // Icons on map that support multiple states (at the minimum
+        (name)...: (string|<Indicator>)     // An Indicator value, or a string in the format of "x,y,w,h" where each of x, y, w, and h are an integer, with no spaces or other characters
+    },
+    maps: (string|<MapPlacement>)[],        // Each element is the name of a map, or a MapPlacement object that can override some of the map's properties
+}
+
+<Indicator>: {
+    x: number,                              // Location X
+    y: number,                              // Location Y
+    w: number,                              // Width
+    h: number,                              // Height
+    max?: number                            // Maximum value this indicator may be set to via this layout (exact behavior is tracker-program-defined)
+}
+
+<Map>: {
+    x: number,
+    y: number,
+    cellWidth: number,
+    cellHeight: number,
+    gridWidth: number,
+    gridHeight: number,
+    markerSets?: {                          // A list of marker sets to use
+        name: string,
+        source: string                      // File name. The image will be divided into tiles matching the map's cell size to use for each level.
+    }[],
+    backgrounds?: string[],                 // An array of filenames if the map is not to inherit its background layers from the layout
+    stateName?: string                      // Any maps which share a statename share map data. Should not start with underscore.
+}
+
+<MapPlacement>: {                           // Each optional property will override the value inherited from the map definition
+    name: string,
+    markerSets: {                           // STACK with underlying map's markers
+        name: string,
+        source: string                      // File name. The image will be divided into tiles matching the map's cell size to use for each level.
+    }[],
+    x?: number,
+    y?: number,
+    cellWidth?: number,
+    cellHeight? number,
+    backgrounds?: string[],
+    stateName?: string                      // Any maps which share a statename share map data
+}
+
+<MarkerSet>: 
+    (string|Marker)[]
+
+
+<Marker>: {
+    x: number,                              // Grid coordinate
+    y: number,                              // 
+    level?: number                          // Defaults to 0
+}

@@ -1,0 +1,11 @@
+﻿- Allows specification of keynodes and associations
+- Does not allow rules or filters
+
+{
+    keyNodes: {
+        (name)...: string               // value is absolute path of node (no prefix dot)
+    },
+    associations: {
+        (name)...: string               // value is path of node, either 'keyNode.relPath' or '.absolutePath'
+    }
+}

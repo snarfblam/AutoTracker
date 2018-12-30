@@ -1,0 +1,39 @@
+{
+"keyNodes": {
+    "zelda": "zelda.player.inv",
+    "metroid": "metroid.player.inv.equipment",
+    "zflags": "zelda.flags",
+    "mstats": "metroid.player.inv",
+    "zstats": "zelda.player.stat"
+},
+"associations": {
+    "wand": "zelda.rod",
+    "sword": "zelda.sword",
+    "boomerang": "zelda.boom",
+    "recorder": "zelda.recorder",
+    "bow": "zelda.bow",
+    "raft": "zelda.raft",
+    "candle": "zelda.candle",
+    "ladder": "zelda.ladder",
+    "book": "zelda.book",
+    "arrow": "zelda.arrows",
+    "mkey": "zelda.magickey",
+    "bracelet": "zelda.bracelet",
+    "ring": "zelda.ring",
+    "bait": "zstats.bait",
+    "letter": "zstats.letter",
+    "sheild": "zstats.shield",
+
+    "morphbomb": "metroid.bombs",
+    "varia": "metroid.varia",
+    "screw": "metroid.screw",
+    "morph": "metroid.morph",
+    "ice": "metroid.ice",
+    "long": "metroid.long",
+    "wave": "metroid.wave",
+    "hijump": "metroid.jump",
+    "kraid": "mstats.totems.K",
+    "ridley": "mstats.totems.R",
+    "mabrain": ".metroid.flags.finished_tourian"
+}
+}
