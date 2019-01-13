@@ -46,7 +46,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonTracker.cs" />
+    <Compile Include="MarkerSelectorControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TrackerEngine.cs" />
     <Compile Include="Extension.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -66,7 +69,9 @@
     <Compile Include="TrackerControl.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TrackerErrorLog.cs" />
     <Compile Include="TrackerFileException.cs" />
+    <Compile Include="TrackerFunction.cs" />
     <Compile Include="TrackerMeta.cs" />
     <Compile Include="TrackerState.cs" />
     <Compile Include="Tuple.cs" />
@@ -95,8 +100,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Formats\Layout Format.txt" />
-    <Content Include="Formats\JsonTracker format.txt" />
+    <Content Include="Doc\Layout Format.txt" />
+    <Content Include="Doc\Tracker Engine Format.txt" />
+    <Content Include="Todo and suggestions.txt" />
+    <None Include="Resources\cheese2.png" />
+    <None Include="Resources\cheese1.png" />
+    <None Include="Resources\cheese.png" />
     <None Include="Resources\z1m1Associations.txt" />
     <None Include="Resources\z1m1Layout.txt" />
   </ItemGroup>

@@ -34,6 +34,12 @@
     "hijump": "metroid.jump",
     "kraid": "mstats.totems.K",
     "ridley": "mstats.totems.R",
-    "mabrain": ".metroid.flags.finished_tourian"
+    "mabrain": ".metroid.flags.finished_tourian",
+
+
+
+    "letter": {
+        "@PlusOne": [0]
+    }
 }
 }

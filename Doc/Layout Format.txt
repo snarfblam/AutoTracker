@@ -98,7 +98,7 @@
 
 <MapPlacement>: {                           // Each optional property will override the value inherited from the map definition
     name: string,
-    markerSets: {                           // STACK with underlying map's markers
+    markerSets?: {                           // STACK with underlying map's markers
         name: string,
         source: string                      // File name. The image will be divided into tiles matching the map's cell size to use for each level.
     }[],

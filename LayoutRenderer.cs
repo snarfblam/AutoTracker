@@ -100,6 +100,9 @@ namespace AutoTracker
         }
 
         void IStateListener.NotifyMarkerChanged(string name, int x, int y) {
+            foreach (var map in maps) {
+                map.InvalidateMarker(name, new Point(x, y));
+            }
         }
 
         public void Dispose() {
@@ -126,11 +129,15 @@ namespace AutoTracker
             Bitmap[] backgrounds;
 
             HashCollection<Point> invalidCells = new HashCollection<Point>();
+            List<TrackerMarkerSetReference> markerSets = new List<TrackerMarkerSetReference>();
 
             public MapRenderer(LayoutRenderer owner, TrackerMapPlacement mapPlacement) {
                 this.owner = owner;
                 this.placement = mapPlacement;
                 this.map = owner.trackerDefinition.maps[mapPlacement.name];
+
+                markerSets.AddRange(map.markerSets);
+                markerSets.AddRange(mapPlacement.markerSets);
 
                 x = placement.x ?? map.x;
                 y = placement.y ?? map.y;
@@ -159,16 +166,39 @@ namespace AutoTracker
             }
 
             public void InvalidateCell(Point coords) {
-                invalidCells.Add(coords);
+                if (!invalidCells.Contains(coords)) {
+                    invalidCells.Add(coords);
+                }
+            }
+
+            public void InvalidateMarker(string setName, Point coords) {
+                foreach (var markerSet in this.markerSets) {
+                    if (markerSet.name == setName) {
+                        InvalidateCell(coords);
+                        return;
+                    }
+                }
             }
 
             public void Update() {
                 foreach (var cell in invalidCells) {
-                    Rectangle src = new Rectangle(cell.X * cellWidth, cell.Y * cellHeight, cellWidth, cellHeight);
+                    Rectangle rect = new Rectangle(cell.X * cellWidth, cell.Y * cellHeight, cellWidth, cellHeight);
                     int state = this.owner.trackerDefinition.Meta.State.GetMapLevel(StateName, cell.X, cell.Y);
                     state = Math.Min(backgrounds.Length - 1, state);
 
-                    Renderer.Draw(backgrounds[state], src, src.X + x, src.Y + y);
+                    Renderer.Draw(backgrounds[state], rect, rect.X + x, rect.Y + y);
+
+                    // Todo: draw any markers
+                    for (var i = 0; i < this.markerSets.Count; i++) {
+                        var mSet = this.markerSets[i];
+                        var markerState = this.owner.trackerDefinition.Meta.State.GetMarkers(this.markerSets[i].name, cell.X, cell.Y);
+                        var source = this.owner.trackerDefinition.Meta.GetImage(mSet.source);
+                        var srcRect = new Rectangle(0, 0, cellWidth, cellHeight);
+                        for (var j = 0; j < markerState.Count; j++) {
+                            srcRect.X = markerState[j] * cellWidth;
+                            Renderer.Draw(source, srcRect, rect.X + x, rect.Y + y);
+                        }
+                    }
                 }
 
                 invalidCells.Clear();
@@ -181,6 +211,11 @@ namespace AutoTracker
                     }
                 }
             }
+        }
+
+
+        public void UpdateAll() {
+            this.RenderInitial();
         }
     }
 

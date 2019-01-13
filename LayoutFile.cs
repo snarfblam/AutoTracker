@@ -121,7 +121,7 @@ namespace AutoTracker
         public int y { get; set; }
         public int w { get; set; }
         public int h { get; set; }
-        public int max { get; set; }
+        public int? max { get; set; }
 
         public Rectangle ToRect() {
             return new Rectangle(x, y, w, h);

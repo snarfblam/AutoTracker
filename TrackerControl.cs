@@ -206,6 +206,12 @@ namespace AutoTracker
                 ((IDisposable)this).Dispose();
             }
         }
+
+        internal void ResetTracker() {
+            _tracker.Meta.State.Reset();
+            _renderer.UpdateAll();
+            Invalidate();
+        }
     }
 
 

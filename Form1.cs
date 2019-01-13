@@ -16,7 +16,7 @@ namespace AutoTracker
         TrackerLayoutFile layout;
         Scheduler timer;
 
-        private JsonTracker trackinator; // = new JsonTracker();
+        private TrackerEngine trackinator; // = new JsonTracker();
 
         string statusFilePath;
 
@@ -37,62 +37,37 @@ namespace AutoTracker
 
             statusFilePath = Path.Combine(z1m1, "z1m1.main.state");
 
-            trackinator = new JsonTracker(AutoTracker.Properties.Resources.z1m1Associations);
-            //trackinator.AddKeyNode("zelda", "zelda.player.inv");
-            //trackinator.AddKeyNode("metroid", "metroid.player.inv.equipment");
-            //trackinator.AddKeyNode("zflags", "zelda.flags");
-            //trackinator.AddKeyNode("mstats", "metroid.player.inv");
-            //trackinator.AddKeyNode("zstats", "zelda.player.stat");
-
-            //trackinator.AddAssociation("wand", "zelda.rod");
-            //trackinator.AddAssociation("sword", "zelda.sword");
-            //trackinator.AddAssociation("boomerang", "zelda.boom");
-            //trackinator.AddAssociation("recorder", "zelda.recorder");
-            //trackinator.AddAssociation("bow", "zelda.bow");
-            //trackinator.AddAssociation("raft", "zelda.raft");
-            //trackinator.AddAssociation("candle", "zelda.candle");
-            //trackinator.AddAssociation("ladder", "zelda.ladder");
-            //trackinator.AddAssociation("book", "zelda.book");
-            //trackinator.AddAssociation("arrow", "zelda.arrows");
-            //trackinator.AddAssociation("mkey", "zelda.magickey");
-            //trackinator.AddAssociation("bracelet", "zelda.bracelet");
-            //trackinator.AddAssociation("ring", "zelda.ring");
-            //trackinator.AddAssociation("bait", "zstats.bait");
-            //trackinator.AddAssociation("letter", "zstats.letter");
-            //trackinator.AddAssociation("sheild", "zstats.shield");
+            trackinator = new TrackerEngine(AutoTracker.Properties.Resources.z1m1Associations);
             trackinator.AddAssociation("bomb", "zelda.max_bombs", delegate(string name, int value) { return (value - 8) / 4; });
 
-            trackinator.AddRule("tri1", json => Math.Max(json("zelda.triforces.0") * 3, json("zelda.compasses.0") * 2));
-            trackinator.AddRule("tri1", json => Math.Max(json("zelda.triforces.0") * 3, json("zelda.compasses.0") * 2));
-            trackinator.AddRule("tri2", json => Math.Max(json("zelda.triforces.1") * 3, json("zelda.compasses.1") * 2));
-            trackinator.AddRule("tri3", json => Math.Max(json("zelda.triforces.2") * 3, json("zelda.compasses.2") * 2));
-            trackinator.AddRule("tri4", json => Math.Max(json("zelda.triforces.3") * 3, json("zelda.compasses.3") * 2));
-            trackinator.AddRule("tri5", json => Math.Max(json("zelda.triforces.4") * 3, json("zelda.compasses.4") * 2));
-            trackinator.AddRule("tri6", json => Math.Max(json("zelda.triforces.5") * 3, json("zelda.compasses.5") * 2));
-            trackinator.AddRule("tri7", json => Math.Max(json("zelda.triforces.6") * 3, json("zelda.compasses.6") * 2));
-            trackinator.AddRule("tri8", json => Math.Max(json("zelda.triforces.7") * 3, json("zelda.compasses.7") * 2));
+            trackinator.AddRule("tri1", json => Math.Max(json("zelda.triforces.0") * 2, json("zelda.compasses.0") ));
+            trackinator.AddRule("tri1", json => Math.Max(json("zelda.triforces.0") * 2, json("zelda.compasses.0") ));
+            trackinator.AddRule("tri2", json => Math.Max(json("zelda.triforces.1") * 2, json("zelda.compasses.1") ));
+            trackinator.AddRule("tri3", json => Math.Max(json("zelda.triforces.2") * 2, json("zelda.compasses.2") ));
+            trackinator.AddRule("tri4", json => Math.Max(json("zelda.triforces.3") * 2, json("zelda.compasses.3") ));
+            trackinator.AddRule("tri5", json => Math.Max(json("zelda.triforces.4") * 2, json("zelda.compasses.4") ));
+            trackinator.AddRule("tri6", json => Math.Max(json("zelda.triforces.5") * 2, json("zelda.compasses.5") ));
+            trackinator.AddRule("tri7", json => Math.Max(json("zelda.triforces.6") * 2, json("zelda.compasses.6") ));
+            trackinator.AddRule("tri8", json => Math.Max(json("zelda.triforces.7") * 2, json("zelda.compasses.7") ));
             trackinator.AddRule("tri9", json => Math.Max(json("zflags.triforce_of_power") * 3, json("zelda.compasses.8") * 2));
-
-            //trackinator.AddAssociation("morphbomb", "metroid.bombs");
-            //trackinator.AddAssociation("varia", "metroid.varia");
-            //trackinator.AddAssociation("screw", "metroid.screw");
-            //trackinator.AddAssociation("morph", "metroid.morph");
-            //trackinator.AddAssociation("ice", "metroid.ice");
-            //trackinator.AddAssociation("long", "metroid.long");
-            //trackinator.AddAssociation("wave", "metroid.wave");
-            //trackinator.AddAssociation("hijump", "metroid.jump");
-
-            //trackinator.AddAssociation("kraid", "mstats.totems.K");
-            //trackinator.AddAssociation("ridley", "mstats.totems.R");
-            //trackinator.AddAssociation("mabrain", ".metroid.flags.finished_tourian");
 
         }
 
         internal void setLayout(TrackerLayoutFile layout) {
             this.layout = layout;
-            trackerControl1.Tracker = layout;
-            trackerControl1.LayoutName = "zelda";
-            //this.renderer = new LayoutRenderer(layout, "zelda");
+            trackerUI.Tracker = layout;
+            trackerUI.LayoutName = "zelda";
+
+            mscMarkers.LayoutFile = layout;
+            mscMarkers.LayoutName = "zelda";
+            mscMarkers.MarkerSetPlacement = layout.layouts["zelda"].maps[0].markerSets[0];
+            mscMarkers.MarkerSetName = mscMarkers.MarkerSetPlacement.name;
+
+            mscMetMarkers.LayoutFile = layout;
+            mscMetMarkers.LayoutName = "metroid";
+            mscMetMarkers.MarkerSetPlacement = layout.layouts["metroid"].maps[0].markerSets[0];
+            mscMetMarkers.MarkerSetName = mscMetMarkers.MarkerSetPlacement.name;
+
         }
 
         protected override void OnPaint(PaintEventArgs e) {
@@ -104,32 +79,84 @@ namespace AutoTracker
         bool showMet = false;
         protected override void OnClick(EventArgs e) {
             base.OnClick(e);
+            //ToggleMaps();
+        }
 
-            //layout.Meta.State.SetIndicatorLevel("tri1", 1);
-            //renderer.Update();
-            //this.Invalidate();
-            showMet = !showMet;
-            trackerControl1.LayoutName = showMet ? "metroid" : "zelda";
+        private void ToggleMaps() {
+            if (!mnuNoMap.Checked) {
+                showMet = !showMet;
+            }
+            trackerUI.LayoutName = showMet ? "metroid" : "zelda";
+            mnuZelda.Checked = !showMet;
+            mnuMetroid.Checked = showMet;
+            mscMarkers.Visible = !showMet;
+            mscMetMarkers.Visible = showMet;
 
-            HandleStateFileChanged(statusFilePath, 0);
+            mnuNoMap.Checked = false;
+            SetFormSize();
+
+            if (mnuAutoTrack.Checked) {
+                HandleStateFileChanged(statusFilePath, 0);
+            }
         }
 
         private void trackerControl1_IndicatorClicked(object sender, IndicatorEventArgs e) {
             //this.Text = e.Name;
             var amt = e.Button == System.Windows.Forms.MouseButtons.Left ? 1 : -1;
-            using (var update = trackerControl1.BeginUpdate()) {
-                var lvl = update.State.GetIndicatorLevel(e.Name);
-                update.State.SetIndicatorLevel(e.Name, Math.Max(0, lvl + amt));
+            using (var update = trackerUI.BeginUpdate()) {
+                var maximum = getMaxValue(e.Name) ?? 1;
+
+                var lvl = update.State.GetIndicatorLevel(e.Name) + amt;
+                lvl = Math.Max(0, Math.Min(lvl, maximum));
+
+                update.State.SetIndicatorLevel(e.Name, lvl);
             }
+        }
+
+        int? getMaxValue(string indicatorName) {
+            TrackerIndicator i;
+            if (layout.layouts[trackerUI.LayoutName].indicators.TryGetValue(indicatorName, out i)) {
+                return i.max;
+            }
+            return null;
         }
 
         private void trackerControl1_MapCellClicked(object sender, GridEventArgs e) {
             //this.Text = e.Coords.ToString();
-            var amt = e.Button == System.Windows.Forms.MouseButtons.Left ? 1 : -1;
-            using (var update = trackerControl1.BeginUpdate()) {
-                var lvl = update.State.GetMapLevel(e.Name, e.Coords.X, e.Coords.Y);
-                update.State.SetMapLevel(e.Name, e.Coords.X, e.Coords.Y, Math.Max(0, lvl + amt));
+            if (e.Button == System.Windows.Forms.MouseButtons.Right) {
+                using (var update = trackerUI.BeginUpdate()) {
+                    if (mnuZelda.Checked) {
+                        var currentValue = -1;
+                        var currentMarkers = update.State.GetMarkers("zmarkers", e.Coords.X, e.Coords.Y);
+                        foreach (var m in currentMarkers) currentValue = m;
+
+                        update.State.ClearMarker("zmarkers", e.Coords.X, e.Coords.Y);
+
+                        var newValue = mscMarkers.SelectedIndex;
+                        if (newValue != currentValue) {
+                            update.State.AddMarker("zmarkers", e.Coords.X, e.Coords.Y, newValue);
+                        }
+                    } else {
+                        var currentValue = -1;
+                        var currentMarkers = update.State.GetMarkers("mmarkers", e.Coords.X, e.Coords.Y);
+                        foreach (var m in currentMarkers) currentValue = m;
+
+                        update.State.ClearMarker("mmarkers", e.Coords.X, e.Coords.Y);
+
+                        var newValue = mscMetMarkers.SelectedIndex;
+                        if (newValue != currentValue) {
+                            update.State.AddMarker("mmarkers", e.Coords.X, e.Coords.Y, newValue);
+                        }
+                    }
+                }
+            } else if (e.Button == System.Windows.Forms.MouseButtons.Left) {
+                var amt = e.Button == System.Windows.Forms.MouseButtons.Left ? 1 : -1;
+                using (var update = trackerUI.BeginUpdate()) {
+                    var lvl = 1 - update.State.GetMapLevel(e.Name, e.Coords.X, e.Coords.Y);
+                    update.State.SetMapLevel(e.Name, e.Coords.X, e.Coords.Y, Math.Max(0, lvl));
+                }
             }
+
         }
 
         private void fswPlayerStatus_Changed(object sender, FileSystemEventArgs e) {
@@ -178,16 +205,7 @@ namespace AutoTracker
                 var zeldaInv = state["zelda"]["player"]["inv"];
                 var metInv = state["metroid"]["player"]["inv"]["equipment"];
 
-                //layout.Meta.State.SetIndicatorLevel("sword", (int)zeldaInv["sword"]);
-                using (var update = trackerControl1.BeginUpdate()) {
-                    //foreach (var prop in zeldaProps) {
-                    //    var value = (int)zeldaInv[prop.propName];
-                    //    update.State.SetIndicatorLevel(prop.stateName, value);
-                    //}
-                    //foreach (var prop in metProps) {
-                    //    var value = (int)metInv[prop.propName];
-                    //    update.State.SetIndicatorLevel(prop.stateName, value);
-                    //}
+                using (var update = trackerUI.BeginUpdate()) {
                     trackinator.Process(state, update.State);
                 }
             }
@@ -204,6 +222,94 @@ namespace AutoTracker
                 obfuscosity = 0xFF & (7 + obfuscosity);
             }
         }
+
+        protected override void OnKeyPress(KeyPressEventArgs e) {
+            if (e.KeyChar == ' ') {
+
+            } else if (e.KeyChar == 'M' || e.KeyChar == 'm') {
+                e.Handled = true;
+                trackerMenu.Show(this, 0, 0);
+            }
+
+            base.OnKeyPress(e);
+        }
+        protected override void OnKeyDown(KeyEventArgs e) {
+            if (e.KeyCode == Keys.Escape && !trackerMenu.Visible) {
+                e.Handled = true;
+                SetCheeseburgerVisible(!burger.Visible);
+            } else if (e.KeyCode == Keys.Space) {
+                if (ModifierKeys == Keys.Control) {
+                    HideMap();
+                } else {
+                    ToggleMaps();
+                }
+                e.Handled = true;
+            }
+            base.OnKeyUp(e);
+        }
+
+        private void SetCheeseburgerVisible(bool visible) {
+            burger.Visible = visible;
+            mnuHideDaBurger.Checked = !visible;
+        }
+
+        private void burger_MouseUp(object sender, MouseEventArgs e) {
+            trackerMenu.Show(burger, e.Location);
+        }
+
+        private void burger_MouseDown(object sender, MouseEventArgs e) {
+
+        }
+
+        private void mnuZelda_Click(object sender, EventArgs e) {
+            if (!mnuZelda.Checked) ToggleMaps();
+        }
+
+        private void mnuMetroid_Click(object sender, EventArgs e) {
+            if (!mnuMetroid.Checked) ToggleMaps();
+        }
+
+        private void mnuHideDaBurger_Click(object sender, EventArgs e) {
+            SetCheeseburgerVisible(!burger.Visible);
+        }
+
+        private void mnuAutoTrack_Click(object sender, EventArgs e) {
+            mnuAutoTrack.Checked = !mnuAutoTrack.Checked;
+            fswPlayerStatus.EnableRaisingEvents = mnuAutoTrack.Checked;
+
+            if (mnuAutoTrack.Checked) {
+                HandleStateFileChanged(statusFilePath, 0);
+            }
+        }
+
+        private void mnuNoMap_Click(object sender, EventArgs e) {
+            HideMap();
+        }
+
+        private void HideMap() {
+            mnuZelda.Checked = false;
+            mnuMetroid.Checked = false;
+            mnuNoMap.Checked = true;
+            SetFormSize();
+        }
+
+        private void SetFormSize() {
+            if (mnuNoMap.Checked) {
+                if (this.ClientSize.Height != 184) {
+                    this.ClientSize = new Size(this.ClientSize.Width, 184);
+                }
+            } else {
+                if (this.ClientSize.Height != 529) {
+                    this.ClientSize = new Size(this.ClientSize.Width, 529);
+                }
+            }
+        }
+
+        private void mnuReset_Click(object sender, EventArgs e) {
+            trackerUI.ResetTracker();
+        }
+
+
     }
 }
 

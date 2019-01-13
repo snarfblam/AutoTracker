@@ -42,8 +42,19 @@ namespace AutoTracker
             foreach (var map in trackerInfo.maps.Values) {
                 InitializeGrid(map.stateName, 0, 0);
             }
+
+
         }
 
+        public void Reset() {
+            indicatorLevels.Clear();
+            foreach (var grid in grids.Values) {
+                grid.Clear();
+            }
+            foreach (var markerSet in markerSets.Values) {
+                markerSet.Clear();
+            }
+        }
         private void InitializeMarkers(string stateName, MapMarker[] markers) {
             MapMarkerList markerState;
             if (!markerSets.TryGetValue(stateName, out markerState)) {
@@ -51,7 +62,9 @@ namespace AutoTracker
                 markerSets.Add(stateName, markerState);
             }
 
-            markerState.AddRange(markers);
+            if (markers != null) {
+                markerState.AddRange(markers);
+            }
         }
 
         /// <summary>
@@ -102,6 +115,37 @@ namespace AutoTracker
                 foreach (var l in listeners) l.NotifyMapChanged(stateName, x, y);
             }
         }
+
+        public void AddMarker(string markerSet, int x, int y, int value) {
+            MapMarkerList markers;
+            if(markerSets.TryGetValue(markerSet, out markers)){
+                markers.Add(new MapMarker(x, y, value));
+                foreach (var l in listeners) l.NotifyMarkerChanged(markerSet, x, y);
+            }
+        }
+
+        public void ClearMarker(string markerSet, int x, int y) {
+            MapMarkerList markers;
+            if (markerSets.TryGetValue(markerSet, out markers)) {
+                int removedCount = markers.RemoveAll(entry => entry.X == x && entry.Y == y);
+                if (removedCount > 0) {
+                    foreach (var l in listeners) l.NotifyMarkerChanged(markerSet, x, y);
+                }
+            }
+        }
+
+        private static readonly IList<int> emptyMarkerList = (new List<int>()).AsReadOnly();
+        public IList<int> GetMarkers(string markerSet, int x, int y) {
+            MapMarkerList markerState;
+            if (this.markerSets.TryGetValue(markerSet, out markerState)) {
+                var result = markerState
+                    .FindAll(marker => (marker.X == x) & (marker.Y == y))
+                    .ConvertAll(marker => marker.Value);
+                return result;
+            } else {
+                return emptyMarkerList;
+            }
+        }
     }
 
     class MapGridState
@@ -142,6 +186,10 @@ namespace AutoTracker
                 bufferWidth = newWidth;
                 bufferHeight = newHeight;
             }
+        }
+
+        internal void Clear() {
+            Array.Clear(buffer, 0, buffer.Length);
         }
     }
 

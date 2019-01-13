@@ -6,12 +6,12 @@ using Newtonsoft.Json.Linq;
 namespace AutoTracker
 {
     /// <summary>
-    /// Parses state from JSON data and applies it to a TrackerState object
+    /// Uses 'associations' to process game state and update the tracker state.
     /// </summary>
     /// <remarks>JSON paths are specified using dot notation, in the form of 
     /// "keynode.subnode.subnode...". To specify a path relative to the root,
     /// use the notation ".subnode.subnode...". </remarks>
-    class JsonTracker
+    class TrackerEngine
     {
         public IList<NodeAssociation> KeyNodes { get; private set; }
         public IList<NodeAssociation> Associations { get; private set; }
@@ -21,19 +21,27 @@ namespace AutoTracker
         List<NodeAssociation> _Associations = new List<NodeAssociation>();
         List<NodeRule> _CustomRules = new List<NodeRule>();
 
-        public JsonTracker() {
+        public TrackerEngine() {
             this.KeyNodes = _KeyNodes.AsReadOnly();
             this.Associations = _Associations.AsReadOnly();
             this.CustomRules = _CustomRules.AsReadOnly();
         }
 
-        public JsonTracker(string jsonDefinition) {
+        public TrackerEngine(string jsonDefinition) {
             var definition = JsonTrackerFile.FromString(jsonDefinition);
             foreach (var keyNode in definition.keyNodes) {
                 AddKeyNode(keyNode.Key, keyNode.Value);
             }
             foreach (var association in definition.associations) {
-                AddAssociation(association.Key, association.Value);
+                if (association.Value is string) {
+                    AddAssociation(association.Key, (string)association.Value);
+                } else {
+                    if (((JToken)association.Value).Type == JTokenType.String) {
+                        AddAssociation(association.Key, (string)(JToken)association.Value);
+                    } else {
+                        AddAssociation(association.Key, (JToken)association.Value);
+                    }
+                }
             }
         }
 
@@ -46,6 +54,11 @@ namespace AutoTracker
         public void AddAssociation(string name, string path, NodeFilterFunction filter) {
             _Associations.Add(new NodeAssociation(name, path, filter));
         }
+        private void AddAssociation(string name, JToken expr) {
+            _Associations.Add(new NodeAssociation(name, expr));
+        }
+
+
         public void AddRule(string name, NodeRuleFunction rule) {
             this._CustomRules.Add(new NodeRule(name, rule));
         }
@@ -61,7 +74,13 @@ namespace AutoTracker
         /// </summary>
         public void Process(JObject json, TrackerState state) {
             Dictionary<string, JToken> keyNodes = new Dictionary<string, JToken>();
-
+            var nodeGetter = (NodeResolver)delegate(string path) {
+                var association = new NodeAssociation(null, path);
+                return FindNode(json, keyNodes, association.KeyNode, association.Path);
+            };
+            var jsonGetter = (JsonValueGetterFunction)delegate(string path) {
+                return (int)(nodeGetter(path) ?? 0);
+            };
             // Identify our key nodes
             foreach (var node in this._KeyNodes) {
                 //var jsonNode = FindNode(json, node.Path);
@@ -71,21 +90,23 @@ namespace AutoTracker
 
             // Find and apply our states
             foreach (var association in this._Associations) {
-                var element = FindNode(json, keyNodes, association.KeyNode, association.Path);
+                if (association.Expression == null) {
+                    var element = FindNode(json, keyNodes, association.KeyNode, association.Path);
 
-                var value = (int)(element ?? 0);
-                if (association.Filter != null) {
-                    value = association.Filter(association.Name, value);
+                    var value = (int)(element ?? 0);
+                    if (association.Filter != null) {
+                        value = association.Filter(association.Name, value);
+                    }
+                    state.SetIndicatorLevel(association.Name, value);
+                } else {
+                    var value = TrackerFunction.EvaluateExpression((JToken)association.Expression, nodeGetter);
+                    if(value != null) state.SetIndicatorLevel(association.Name, value.Value);
+
                 }
-                state.SetIndicatorLevel(association.Name, value);
             }
 
-            var jsonGetter = (JsonValueGetterFunction)delegate(string path) {
-                var association = new NodeAssociation(null, path);
-                var element = FindNode(json, keyNodes, association.KeyNode, association.Path);
-                return (int)(element ?? 0);
 
-            };
+
             foreach (var rule in this._CustomRules) {
                 var result = rule.Rule(jsonGetter);
                 state.SetIndicatorLevel(rule.IndicatorName, result);
@@ -123,6 +144,7 @@ namespace AutoTracker
         public NodeAssociation(string name, string keyNode, IList<string> path, NodeFilterFunction filter) {
             this.Name = name;
             this.Filter = filter;
+            this.Expression = null;
 
             this.KeyNode = keyNode ?? string.Empty;
             var thisPath = new string[path.Count];
@@ -136,6 +158,7 @@ namespace AutoTracker
         public NodeAssociation(string name, string path, NodeFilterFunction filter) {
             this.Name = name;
             this.Filter = filter;
+            this.Expression = null;
 
             var parts = path.Split('.');
             if (parts.Length < 2) throw new ArgumentException("Invalid path: missing root");
@@ -146,8 +169,16 @@ namespace AutoTracker
 
             this.Path = thisPath;
         }
+        public NodeAssociation(string name, JToken expr) {
+            this.Name = name;
+            this.Filter = null;
+            this.KeyNode = null;
+            this.Expression = expr;
+            this.Path = null;
+        }
         public readonly string KeyNode;
         public readonly IList<string> Path;
+        public readonly JToken Expression;
         public string Name;
         public NodeFilterFunction Filter;
     }
@@ -161,6 +192,15 @@ namespace AutoTracker
         public readonly string IndicatorName;
         public readonly NodeRuleFunction Rule;
     }
+    /// <summary>
+    /// Finds a node within a document given the specified path.
+    /// </summary>
+    public delegate JToken NodeResolver(string path);
+    
+    /// <summary>
+    /// Returns the value of a node within a document given the specified path. The node must contain a literal value.
+    /// </summary>
+    // Todo: deprecated
     public delegate int JsonValueGetterFunction(string path);
     public delegate int NodeRuleFunction(JsonValueGetterFunction json);
     public delegate int NodeFilterFunction(string indicatorName, int value);
@@ -171,6 +211,6 @@ namespace AutoTracker
             return Newtonsoft.Json.JsonConvert.DeserializeObject<JsonTrackerFile>(json);
         }
         public Dictionary<string, string> keyNodes { get; set; }
-        public Dictionary<string, string> associations { get; set; }
+        public Dictionary<string, JToken> associations { get; set; }
     }
 }
