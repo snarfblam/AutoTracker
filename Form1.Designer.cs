@@ -84,7 +84,7 @@
             // 
             // burger
             // 
-            this.burger.Image = global::AutoTracker.Properties.Resources.cheese2;
+            this.burger.Image = ((System.Drawing.Image)(resources.GetObject("burger.Image")));
             this.burger.Location = new System.Drawing.Point(1, 0);
             this.burger.Name = "burger";
             this.burger.Size = new System.Drawing.Size(20, 20);
@@ -108,7 +108,7 @@
             toolStripSeparator3,
             this.mnuHideDaBurger});
             this.trackerMenu.Name = "contextMenuStrip1";
-            this.trackerMenu.Size = new System.Drawing.Size(189, 198);
+            this.trackerMenu.Size = new System.Drawing.Size(189, 176);
             // 
             // mnuZelda
             // 

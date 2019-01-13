@@ -120,11 +120,38 @@ namespace AutoTracker.Properties {
         /// <summary>
         ///   Looks up a localized string similar to {
         ///    &quot;files&quot;: {
-        ///        &quot;z0&quot;: &quot;iVBORw0KGgoAAAANSUhEUgAAAoAAAAHgCAIAAAC6s0uzAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjExR/NCNwAAgx9JREFUeF7tvdtzHNl15muPZc9IdlsaTXtsHfk2tizL1ky0/yPHPJxXRzgmQid83iY65s0PfhDAqgKaYpNNNgkCjasKd6AKF4K4EqRu3e04/8tZld9iYnHtyl0775nF9YsvEFn7smpj5871VdYl87cMwzCMyvjjP/5j3jIMwzAMozJ+/OMf//Zv/zY/cPiHf/gH3jIMwzAMo1g++ugj3noXcl8zYMMwDMMoEddozX0NwzAMo3Rir/3PESgxAzYMwzCMcoHdKvcF9BCFhmEYhmEUyXe+8x2yWPLayH9HUOFHEbTBRebBhmEYhl [rest of string was truncated]&quot;;.
+        ///    },
+        ///    &quot;layouts&quot;: {
+        ///        &quot;zelda&quot;: {
+        ///            &quot;backgrounds&quot;: [
+        ///                &quot;z1m1-0.png&quot;,
+        ///                &quot;z1m1-1.png&quot;,
+        ///                &quot;z1m1-2.png&quot;,
+        ///                &quot;z1m1-3.png&quot;
+        ///            ],
+        ///            &quot;indicators&quot;: {
+        ///                &quot;tri1&quot;: {
+        ///                    &quot;x&quot;: 16,
+        ///                    &quot;y&quot;: 16,
+        ///                    &quot;w&quot;: 32,
+        ///                    &quot;h&quot;: 33,
+        ///                    &quot;max&quot;: 2
+        ///                },
+        ///               &quot;tri2&quot;: {
+        ///                    &quot;x&quot;: 4 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string z1m1Layout {
             get {
                 return ResourceManager.GetString("z1m1Layout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {&quot;files&quot;:{&quot;!/packedfile0&quot;:&quot;iVBORw0KGgoAAAANSUhEUgAAAiAAAAHgCAMAAACrVyYHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMAUExURQAAAAEBAQICAgMDAwQEBAUFBQYGBgcHBwgICAkJCQoKCgsLCwwMDA0NDQ4ODg8PDxAQEBERERISEhMTExQUFBUVFRYWFhcXFxgYGBkZGRoaGhsbGxwcHB0dHR4eHh8fHyAgICEhISIiIiMjIyQkJCUlJSYmJicnJygoKCkpKSoqKisrKywsLC0tLS8vLzAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string z1m1PackedLayout {
+            get {
+                return ResourceManager.GetString("z1m1PackedLayout", resourceCulture);
             }
         }
     }

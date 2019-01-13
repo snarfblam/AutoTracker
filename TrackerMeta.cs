@@ -38,15 +38,16 @@ namespace AutoTracker
             Bitmap result;
 
             if (!images.TryGetValue(path, out result)) {
-                if(path.StartsWith("!/") || path.StartsWith("!\\")) {
+                if (path.StartsWith("!/") || path.StartsWith("!\\")) {
                     var embeddedFileName = path.Substring(2);
                     var base64 = File.Files[embeddedFileName];
                     var bytes = Convert.FromBase64String(base64);
                     var stream = new MemoryStream(bytes);
 
                     result = (Bitmap)Image.FromStream(stream);
+                } else {
+                    result = (Bitmap)Image.FromFile(Path.Combine(RootPath, path));
                 }
-                result = (Bitmap)Image.FromFile(Path.Combine(RootPath, path));
                 images.Add(path, result);
             }
 
