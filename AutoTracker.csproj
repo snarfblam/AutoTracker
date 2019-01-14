@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>SuiteNES.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>.\Newtonsoft.Json.dll</HintPath>
@@ -105,6 +108,7 @@
     <Content Include="Doc\Layout Format.txt" />
     <Content Include="Doc\Tracker Engine Format.txt" />
     <None Include="Resources\z1m1PackedLayout.txt" />
+    <Content Include="SuiteNES.ico" />
     <Content Include="Todo and suggestions.txt" />
     <None Include="Resources\cheese2.png" />
     <None Include="Resources\cheese1.png" />
