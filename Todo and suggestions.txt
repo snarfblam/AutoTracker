@@ -8,3 +8,4 @@
     - Different buttons for "set as brush" and "mark as obtained"
 -Cubixthree
     - I was thinking that you could drag an item to the spot it's in, then when you get it, click on the item and it turns gray.
+    + (Re: bomb icon) you could make it one bomb, but with +4 and +8
