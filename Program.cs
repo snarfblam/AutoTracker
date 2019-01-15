@@ -1,8 +1,12 @@
 ﻿using System;
+using Newtonsoft.Json;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using AutoTracker.Properties;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace AutoTracker
 {
@@ -30,19 +34,59 @@ namespace AutoTracker
                     
                 }
             } else {
+                RunApplication();
+            }
+        }
 
-                //var layoutFile = Resources.z1m1Layout;
-                var layoutFile = Resources.z1m1PackedLayout;
-                var layout = LayoutFileParser.Parse(layoutFile);
-                //layout.Meta.RootPath = "D:\\gits\\AutoTracker\\z1m1Layout";
+        private static void RunApplication() {
+            LoadSettings();
 
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
+            //var layoutFile = Resources.z1m1Layout;
+            var layoutFile = Resources.z1m1PackedLayout;
+            var layout = LayoutFileParser.Parse(layoutFile);
+            //layout.Meta.RootPath = "D:\\gits\\AutoTracker\\z1m1Layout";
 
-                var mainFrm = new Form1();
-                mainFrm.setLayout(layout);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
-                Application.Run(mainFrm);
+            var mainFrm = new Form1();
+            mainFrm.setLayout(layout);
+
+            Application.Run(mainFrm);
+
+            SaveSettings();
+        }
+
+        static string appDataPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "Z1M1AutoTracker");
+        static string settingsFilePath = Path.Combine(appDataPath, "settings.json");
+        public static Settings Settings { get; private set; }
+
+        static void LoadSettings() {
+            Settings = new Settings();
+
+            if (File.Exists(settingsFilePath)) {
+                try {
+                    var fileContents = File.ReadAllText(settingsFilePath);
+                    Settings = JsonConvert.DeserializeObject<Settings>(fileContents);
+                } catch (Exception ex) {
+                    MessageBox.Show("Failed to load settings." + Environment.NewLine +
+                        ex.GetType().ToString() + ": " + ex.Message);
+                }
+            }
+        }
+
+        static void SaveSettings() {
+            var settingsJson = JsonConvert.SerializeObject(Settings);
+            try {
+                if (!Directory.Exists(appDataPath)) {
+                    Directory.CreateDirectory(appDataPath);
+                }
+                File.WriteAllText(settingsFilePath, settingsJson);
+            } catch (Exception ex) {
+                MessageBox.Show("Failed to save settings." + Environment.NewLine +
+                    ex.GetType().ToString() + ": " + ex.Message);
             }
         }
     }

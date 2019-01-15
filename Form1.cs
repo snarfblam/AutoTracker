@@ -51,6 +51,8 @@ namespace AutoTracker
             trackinator.AddRule("tri8", json => Math.Max(json("zelda.triforces.7") * 2, json("zelda.compasses.7") ));
             trackinator.AddRule("tri9", json => Math.Max(json("zflags.triforce_of_power") * 3, json("zelda.compasses.8") * 2));
 
+
+
         }
 
         internal void setLayout(TrackerLayoutFile layout) {
@@ -68,6 +70,12 @@ namespace AutoTracker
             mscMetMarkers.MarkerSetPlacement = layout.layouts["metroid"].maps[0].markerSets[0];
             mscMetMarkers.MarkerSetName = mscMetMarkers.MarkerSetPlacement.name;
 
+            LoadSettings();
+        }
+
+        private void LoadSettings() {
+            SetCheeseburgerVisible(!Program.Settings.hideBurger);
+            SetTrackingMode(Program.Settings.autoTrack);
         }
 
         protected override void OnPaint(PaintEventArgs e) {
@@ -251,6 +259,7 @@ namespace AutoTracker
         private void SetCheeseburgerVisible(bool visible) {
             burger.Visible = visible;
             mnuHideDaBurger.Checked = !visible;
+            Program.Settings.hideBurger = !visible;
         }
 
         private void burger_MouseUp(object sender, MouseEventArgs e) {
@@ -274,12 +283,20 @@ namespace AutoTracker
         }
 
         private void mnuAutoTrack_Click(object sender, EventArgs e) {
-            mnuAutoTrack.Checked = !mnuAutoTrack.Checked;
-            fswPlayerStatus.EnableRaisingEvents = mnuAutoTrack.Checked;
+            bool willTrack = !mnuAutoTrack.Checked;
 
-            if (mnuAutoTrack.Checked) {
+            SetTrackingMode(willTrack);
+        }
+
+        private void SetTrackingMode(bool willTrack) {
+            mnuAutoTrack.Checked = willTrack;
+            fswPlayerStatus.EnableRaisingEvents = willTrack;
+
+            if (willTrack) {
                 HandleStateFileChanged(statusFilePath, 0);
             }
+
+            Program.Settings.autoTrack = willTrack;
         }
 
         private void mnuNoMap_Click(object sender, EventArgs e) {
