@@ -217,7 +217,7 @@
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "Form1";
-            this.Text = "Z1M1 Auto Tracker 0.1";
+            this.Text = "Z1M1 Auto Tracker 0.2";
             ((System.ComponentModel.ISupportInitialize)(this.fswPlayerStatus)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.burger)).EndInit();
             this.trackerMenu.ResumeLayout(false);
