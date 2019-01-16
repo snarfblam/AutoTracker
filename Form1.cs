@@ -52,7 +52,7 @@ namespace AutoTracker
             trackinator.AddRule("tri9", json => Math.Max(json("zflags.triforce_of_power") * 3, json("zelda.compasses.8") * 2));
 
 
-
+            this.Text = this.Text.Replace("@", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor.ToString());
         }
 
         internal void setLayout(TrackerLayoutFile layout) {
