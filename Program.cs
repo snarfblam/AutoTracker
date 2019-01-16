@@ -42,9 +42,16 @@ namespace AutoTracker
             LoadSettings();
 
             //var layoutFile = Resources.z1m1Layout;
-            var layoutFile = Resources.z1m1PackedLayout;
-            var layout = LayoutFileParser.Parse(layoutFile);
-            //layout.Meta.RootPath = "D:\\gits\\AutoTracker\\z1m1Layout";
+            string layoutFileDirectory;
+            string layoutFileContents;
+
+            LoadLayoutFile(out layoutFileContents, out layoutFileDirectory);
+
+            var layout = LayoutFileParser.Parse(layoutFileContents);
+            if (layoutFileDirectory != null) {
+                layout.Meta.RootPath = layoutFileDirectory;
+            }
+
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -57,13 +64,33 @@ namespace AutoTracker
             SaveSettings();
         }
 
-        static string appDataPath = Path.Combine(
+        private static void LoadLayoutFile(out string layoutFileContents, out string layoutFileDirectory) {
+            string externalLayoutDirectory = appDataPath;
+            string externalLayoutFile = Path.Combine(externalLayoutDirectory, "layout.json");
+
+            if (File.Exists(externalLayoutFile)) {
+                layoutFileDirectory = externalLayoutDirectory;
+                layoutFileContents = File.ReadAllText(externalLayoutFile);
+            } else {
+                layoutFileDirectory = null;
+                layoutFileContents = Resources.z1m1PackedLayout;
+            }
+        }
+
+        public static readonly string appDataPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Z1M1AutoTracker");
-        static string settingsFilePath = Path.Combine(appDataPath, "settings.json");
+        public static readonly string settingsFilePath = Path.Combine(appDataPath, "settings.json");
         public static Settings Settings { get; private set; }
 
         static void LoadSettings() {
+            try {
+                EnsureDirectoriesExist();
+            } catch (Exception ex) {
+                MessageBox.Show("Can not access application data." + Environment.NewLine +
+                    ex.GetType().ToString() + ": " + ex.Message);
+            }
+
             Settings = new Settings();
 
             if (File.Exists(settingsFilePath)) {
@@ -80,13 +107,17 @@ namespace AutoTracker
         static void SaveSettings() {
             var settingsJson = JsonConvert.SerializeObject(Settings);
             try {
-                if (!Directory.Exists(appDataPath)) {
-                    Directory.CreateDirectory(appDataPath);
-                }
+                EnsureDirectoriesExist();
                 File.WriteAllText(settingsFilePath, settingsJson);
             } catch (Exception ex) {
                 MessageBox.Show("Failed to save settings." + Environment.NewLine +
                     ex.GetType().ToString() + ": " + ex.Message);
+            }
+        }
+
+        private static void EnsureDirectoriesExist() {
+            if (!Directory.Exists(appDataPath)) {
+                Directory.CreateDirectory(appDataPath);
             }
         }
     }

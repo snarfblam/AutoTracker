@@ -9,3 +9,5 @@
 -Cubixthree
     - I was thinking that you could drag an item to the spot it's in, then when you get it, click on the item and it turns gray.
     + (Re: bomb icon) you could make it one bomb, but with +4 and +8
+    - Make a stamp for a portal (i.e. you saw a flashing white dot) and an unknown dungeon (i.e. you were looking at the minimap and saw a solid white dot)
+    - Can you change the map image so the places have more distinguishable features?

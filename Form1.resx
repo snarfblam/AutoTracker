@@ -524,4 +524,18 @@
   <metadata name="trackerMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <metadata name="mnuLayouts.GenerateMember" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>False</value>
+  </metadata>
+  <data name="mnuLayoutFolder.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAANbY1E9YMgAAABl0RVh0U29m
+        dHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEoSURBVDhPY/j//z9FmCFh89Z6IP6PA9dj04SMGdK3
+        7fh/5dXr/3fevUfBIDGQIega0DHYgLP37mDF8atW/l8/ORYDoxiwdmLk/6cPbhONF7b6oxqwtCPg/+P7
+        1/9vm5VIEoYbMKfe7f+jO5f/r+4P+//v7x+iMEgt3IDJZbb/H9y68H9Bi/f/3z+/E4VBauEGdOeZ/L93
+        48z/qZUO/39++0gUBqmFG9CUqv3/7tUT/0EGffv8higMUgs3oDJa8f/ty0f/NyRr/v/y/hlRGKQWbkBB
+        kMT/mxcO/i+NkPv/8c1DojBILdyAdC/+/0/vnfv//sVtovCze+f/Z/sK/Y+0ZmAFGxDnwLom3pHtf4IT
+        O9EYqH4N0AAdsAFARiSZGG6ADpkY6IX/DACQhdcJ46jlSgAAAABJRU5ErkJggg==
+</value>
+  </data>
 </root>

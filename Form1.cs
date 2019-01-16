@@ -326,6 +326,12 @@ namespace AutoTracker
             trackerUI.ResetTracker();
         }
 
+        private void mnuLayoutFolder_Click(object sender, EventArgs e) {
+            System.Diagnostics.ProcessStartInfo start = new System.Diagnostics.ProcessStartInfo(Program.appDataPath);
+            start.UseShellExecute = true;
+            System.Diagnostics.Process.Start(start);
+        }
+
 
     }
 }

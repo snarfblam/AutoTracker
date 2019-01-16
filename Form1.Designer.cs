@@ -31,6 +31,7 @@
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.Windows.Forms.ToolStripMenuItem mnuLayouts;
             this.fswPlayerStatus = new System.IO.FileSystemWatcher();
             this.burger = new System.Windows.Forms.PictureBox();
             this.trackerMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -43,10 +44,12 @@
             this.mscMetMarkers = new AutoTracker.MarkerSelectorControl();
             this.mscMarkers = new AutoTracker.MarkerSelectorControl();
             this.trackerUI = new AutoTracker.TrackerControl();
+            this.mnuLayoutFolder = new System.Windows.Forms.ToolStripMenuItem();
             menuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            mnuLayouts = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.fswPlayerStatus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.burger)).BeginInit();
             this.trackerMenu.SuspendLayout();
@@ -106,9 +109,10 @@
             this.mnuAutoTrack,
             this.mnuReset,
             toolStripSeparator3,
-            this.mnuHideDaBurger});
+            this.mnuHideDaBurger,
+            mnuLayouts});
             this.trackerMenu.Name = "contextMenuStrip1";
-            this.trackerMenu.Size = new System.Drawing.Size(189, 176);
+            this.trackerMenu.Size = new System.Drawing.Size(189, 220);
             // 
             // mnuZelda
             // 
@@ -202,6 +206,22 @@
             this.trackerUI.IndicatorClicked += new System.EventHandler<AutoTracker.IndicatorEventArgs>(this.trackerControl1_IndicatorClicked);
             this.trackerUI.MapCellClicked += new System.EventHandler<AutoTracker.GridEventArgs>(this.trackerControl1_MapCellClicked);
             // 
+            // mnuLayouts
+            // 
+            mnuLayouts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuLayoutFolder});
+            mnuLayouts.Name = "mnuLayouts";
+            mnuLayouts.Size = new System.Drawing.Size(188, 22);
+            mnuLayouts.Text = "Layouts";
+            // 
+            // mnuLayoutFolder
+            // 
+            this.mnuLayoutFolder.Image = ((System.Drawing.Image)(resources.GetObject("mnuLayoutFolder.Image")));
+            this.mnuLayoutFolder.Name = "mnuLayoutFolder";
+            this.mnuLayoutFolder.Size = new System.Drawing.Size(178, 22);
+            this.mnuLayoutFolder.Text = "Open Layout Folder";
+            this.mnuLayoutFolder.Click += new System.EventHandler(this.mnuLayoutFolder_Click);
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -239,6 +259,7 @@
         private System.Windows.Forms.ToolStripMenuItem mnuHideDaBurger;
         private MarkerSelectorControl mscMetMarkers;
         private System.Windows.Forms.ToolStripMenuItem mnuNoMap;
+        private System.Windows.Forms.ToolStripMenuItem mnuLayoutFolder;
     }
 }
 
