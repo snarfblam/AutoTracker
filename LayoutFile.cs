@@ -9,10 +9,9 @@ namespace AutoTracker
 {
     static class LayoutFileParser
     {
-        static int autoID = 0;
 
         public static TrackerLayoutFile Load(string path) {
-            Load(path, false);
+            return Load(path, false);
         }
         public static TrackerLayoutFile Load(string path, bool applyEffectiveValues) {
             var relativePath = Path.GetDirectoryName(path);
@@ -45,14 +44,10 @@ namespace AutoTracker
             // - Values must be in-range (widths > 0, levels >= 0)
             // - references to embedded files can be statically validated
 
-            // Automatically assign a unique state name to maps that don't explicity define one
-            foreach (var map in result.maps.Values) {
-                if (string.IsNullOrEmpty(map.stateName)) {
-                    string stateName = "_auto_" + autoID.ToString();
-                    autoID++;
 
-                    map.stateName = stateName;
-                }
+
+            if (applyEffectiveValues) {
+                result.ApplyEffectiveValues();
             }
             return result;
         }
@@ -111,6 +106,23 @@ namespace AutoTracker
 
             return result;
         }
+
+        static int autoID = 0;
+        internal void ApplyEffectiveValues() {
+            // Automatically assign a unique state name to maps that don't explicity define one
+            foreach (var map in maps.Values) {
+                if (string.IsNullOrEmpty(map.stateName)) {
+                    string stateName = "_auto_" + autoID.ToString();
+                    autoID++;
+
+                    map.stateName = stateName;
+                }
+            }
+
+            foreach (var layout in layouts.Values) {
+                layout.ApplyEffectiveValues(this);
+            }
+        }
     }
 
 
@@ -144,6 +156,15 @@ namespace AutoTracker
             }
 
             return _backcolorColor;
+        }
+
+        internal void ApplyEffectiveValues(TrackerLayoutFile file) {
+            if (this.margin == null) {
+                this.margin = new LayoutMargin();
+            }
+            foreach (var map in this.maps) {
+                map.ApplyEffectiveValues(file);
+            }
         }
     }
 
@@ -207,6 +228,21 @@ namespace AutoTracker
         public int? cellHeight { get; set; }
         public string[] backgrounds { get; set; }
         public string stateName { get; set; }
+
+        internal void ApplyEffectiveValues(TrackerLayoutFile file) {
+            var mapBase = file.maps[this.name];
+            if (this.stateName == null) this.stateName = mapBase.stateName;
+            if (this.x == null) this.x = mapBase.x;
+            if (this.y == null) this.y = mapBase.y;
+            if (this.cellWidth == null) this.cellWidth = mapBase.cellWidth;
+            if (this.cellHeight == null) this.cellHeight = mapBase.cellHeight;
+            if (this.backgrounds == null) this.backgrounds = mapBase.backgrounds;
+
+            List<TrackerMarkerSetReference> markerSetList = new List<TrackerMarkerSetReference>();
+            markerSetList.AddRange(mapBase.markerSets);
+            markerSetList.AddRange(this.markerSets);
+            this.markerSets = markerSetList.ToArray();
+        }
     }
 
     class TrackerMapMarker

@@ -50,6 +50,17 @@
      there will be an following the property specification, e.g. "expectedProperty: { (abritrary)...: string }"
 -C-style comments are used to document properties
 
+-Runtime notes:
+    -A file can be loaded in standard mode 
+        -The runtime representation corresponds directly to JSON representation
+            -This is assuming the JSON representation is complete and correct (e.g. missing required values could be assigned a default value when loading in standard mode if the tracker elects to not throw an error).
+        -The JSON file will round-trip successfully using this mode
+    -A file can also be loaded with effective values applied
+        -Inherited values will be assigned directly to the inheritor, e.g. copied from map to map placement
+        -Defaut values will be assigned to optional values, e.g. layout margins will be set to (0, 0, 0, 0) if not specified in JSON
+        -Entities which do not explicitly provide a state name will be provided with a unique state name
+
+
 <File>: {
     files?: {                               //  Image files may be embedded
         (name)...: string                   //      Property name is the filename, and contents should be Base64-encoded 
@@ -72,8 +83,8 @@
     },
     maps: (string|<MapPlacement>)[],        // Each element is the name of a map, or a MapPlacement object that can override some of the map's properties
     backcolor?: string,                     // RGB color in hexadecimal (RRGGBB). To be used for margin.
-    margin?: {
-        top: number,
+    margin?: {                              // Space around the background image.
+        top: number,                        // Note that the layout is permitted to place content in the margin.
         left: number,
         bottom: number,
         right: number
@@ -111,7 +122,7 @@
         source: string,                     // File name. The image will be divided into tiles matching the map's cell size to use for each level.
         picker?: {                          // Stamp selection UI
             x: number,                      // Coordinates, in pixels, relative to top-left of layout background (i.e. does not include margins)
-            y: number,
+            y: number,                      // The picker is permitted to occupy the margin (partially or completely)
             width?: number,                 // Size, in pixels. Defaults to width of marker source image multiplied by scale. Note that a marker picker will wrap if it is not wide enough to show all markers in one row.
             height?: number,                // Defaults to height of marger source image multiplied by scale. Must be explicitly set to allow wrapping.
             scale?: number                  // Level of magnification to draw stamps in the picker with.

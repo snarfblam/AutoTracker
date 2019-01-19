@@ -53,12 +53,15 @@ namespace AutoTracker
 
 
             this.Text = this.Text.Replace("@", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor.ToString());
+
         }
 
         internal void setLayout(TrackerLayoutFile layout) {
             this.layout = layout;
             trackerUI.Tracker = layout;
             trackerUI.LayoutName = "zelda";
+            ApplyLayoutExternalMetrics(layout.layouts["zelda"]);
+
 
             mscMarkers.LayoutFile = layout;
             mscMarkers.LayoutName = "zelda";
@@ -73,6 +76,15 @@ namespace AutoTracker
             mscMetMarkers.MapPlacement = layout.layouts["metroid"].maps[0];
 
             LoadSettings();
+
+        }
+
+        private void ApplyLayoutExternalMetrics(TrackerLayout layout) {
+            var backcolor = layout.GetBackcolor();
+            if (backcolor != null) {
+                //this.BackColor = 
+            }
+
         }
 
         private void LoadSettings() {

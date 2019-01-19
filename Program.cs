@@ -47,7 +47,7 @@ namespace AutoTracker
 
             LoadLayoutFile(out layoutFileContents, out layoutFileDirectory);
 
-            var layout = LayoutFileParser.Parse(layoutFileContents);
+            var layout = LayoutFileParser.Parse(layoutFileContents, true);
             if (layoutFileDirectory != null) {
                 layout.Meta.RootPath = layoutFileDirectory;
             }
