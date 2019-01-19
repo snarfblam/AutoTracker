@@ -12,15 +12,28 @@ namespace AutoTracker
         static int autoID = 0;
 
         public static TrackerLayoutFile Load(string path) {
+            Load(path, false);
+        }
+        public static TrackerLayoutFile Load(string path, bool applyEffectiveValues) {
             var relativePath = Path.GetDirectoryName(path);
 
-            var result = Parse(File.ReadAllText(path));
+            var result = Parse(File.ReadAllText(path), applyEffectiveValues);
             result.Meta.RootPath = relativePath;
 
             return result;
         }
 
         public static TrackerLayoutFile Parse(string json) {
+            return Parse(json, false);
+        }
+        /// <summary>Deserializes layout data from a string.</summary>
+        /// <returns></returns>
+        /// <param name="json"></param>
+        /// <param name="applyEffectiveValues">If true, any omitted optional field 
+        /// where a value can be inherited or calculated will be filled in if possible.
+        /// This may be undesirable if the data is being loaded to be modified and
+        /// re-serialized.</param>
+        public static TrackerLayoutFile Parse(string json, bool applyEffectiveValues) {
             var result = Newtonsoft.Json.JsonConvert.DeserializeObject<TrackerLayoutFile>(json);
 
             // Todo: validate map:
@@ -113,6 +126,33 @@ namespace AutoTracker
         public string[] backgrounds { get; set; }
         public Dictionary<string, TrackerIndicator> indicators { get; set; }
         public TrackerMapPlacement[] maps { get; set; }
+        public LayoutMargin? margin { get; set; }
+        public string backcolor { get; set; }
+
+        string _backcolorCached = null;
+        Color? _backcolorColor = null;
+        public Color? GetBackcolor() {
+            // Recalculate if the backcolor property has been changed
+            if (backcolor != _backcolorCached) {
+                _backcolorCached = backcolor;
+                // If parsing the color as RRGGBB fails, we'll return null
+                try {
+                    _backcolorColor = ColorTranslator.FromHtml("#" + _backcolorCached);
+                } catch (Exception) {
+                    _backcolorColor = null;
+                }
+            }
+
+            return _backcolorColor;
+        }
+    }
+
+    struct LayoutMargin
+    {
+        public int top { get; set; }
+        public int bottom { get; set; }
+        public int left { get; set; }
+        public int right { get; set; }
     }
 
     class TrackerIndicator

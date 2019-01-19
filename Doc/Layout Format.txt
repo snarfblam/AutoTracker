@@ -71,6 +71,14 @@
         (name)...: (string|<Indicator>)     // An Indicator value, or a string in the format of "x,y,w,h" where each of x, y, w, and h are an integer, with no spaces or other characters
     },
     maps: (string|<MapPlacement>)[],        // Each element is the name of a map, or a MapPlacement object that can override some of the map's properties
+    backcolor?: string,                     // RGB color in hexadecimal (RRGGBB). To be used for margin.
+    margin?: {
+        top: number,
+        left: number,
+        bottom: number,
+        right: number
+    }
+
 }
 
 <Indicator>: {
@@ -100,14 +108,21 @@
     name: string,
     markerSets?: {                           // STACK with underlying map's markers
         name: string,
-        source: string                      // File name. The image will be divided into tiles matching the map's cell size to use for each level.
+        source: string,                     // File name. The image will be divided into tiles matching the map's cell size to use for each level.
+        picker?: {                          // Stamp selection UI
+            x: number,                      // Coordinates, in pixels, relative to top-left of layout background (i.e. does not include margins)
+            y: number,
+            width?: number,                 // Size, in pixels. Defaults to width of marker source image multiplied by scale. Note that a marker picker will wrap if it is not wide enough to show all markers in one row.
+            height?: number,                // Defaults to height of marger source image multiplied by scale. Must be explicitly set to allow wrapping.
+            scale?: number                  // Level of magnification to draw stamps in the picker with.
+        }
     }[],
     x?: number,
     y?: number,
     cellWidth?: number,
     cellHeight? number,
     backgrounds?: string[],
-    stateName?: string                      // Any maps which share a statename share map data
+    stateName?: string,                     // Any maps which share a statename share map data
 }
 
 <MarkerSet>: 
