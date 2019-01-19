@@ -6,14 +6,19 @@ using System.Drawing;
 
 namespace AutoTracker
 {
+    // Todo: scale calculations via helper methods
+
     class MarkerSelectorControl: Control
     {
         TrackerLayoutFile _layoutFile;
         string _layoutName;
         TrackerMarkerSetReference _markerSetPlacement;
-        string _markerSetName;
+        TrackerMapPlacement _mapPlacement;
         bool _wasLoaded = false;
         Bitmap _tileSource = null;
+        int _tileHeight = 0;
+        int _tileWidth = 0;
+        int _tileCount = 0;
 
         int _selectedIndex = 0;
         int _scale = 1;
@@ -81,20 +86,22 @@ namespace AutoTracker
             }
         }
 
-        public string MarkerSetName {
-            get { return _markerSetName; }
+        public TrackerMapPlacement MapPlacement {
+            get { return _mapPlacement; }
             set {
-                if (_markerSetName != value) {
-                    _markerSetName = value;
+                if (_mapPlacement != value) {
+                    _mapPlacement = value;
                     TryLoadContents();
                 }
             }
         }
 
+        
+
 
 
         private void TryLoadContents() {
-            bool willBeLoaded = _layoutFile != null && _layoutName != null && _markerSetPlacement != null && _markerSetName != null;
+            bool willBeLoaded = _layoutFile != null && _layoutName != null && _markerSetPlacement != null && _mapPlacement != null;
 
             if (_wasLoaded && !willBeLoaded) {
                 this._tileSource = null;
@@ -102,7 +109,12 @@ namespace AutoTracker
             }
 
             if (willBeLoaded) {
+                var metrics = _layoutFile.GetEffectiveMetrics(_mapPlacement);
+
                 this._tileSource = _layoutFile.Meta.GetImage(_markerSetPlacement.source);
+                this._tileWidth = metrics.cellWidth; //MapPlacement.cellWidth;
+                this._tileHeight = metrics.cellHeight; //MapPlacement.cellHeight;
+                this._tileCount = _tileSource.Width / _tileWidth;
                 this.Invalidate();
             }
 
@@ -123,12 +135,34 @@ namespace AutoTracker
             if (_tileSource != null) {
                 var rect = new Rectangle(0, 0, _tileSource.Width, _tileSource.Height);
                 var destRect = new Rectangle(0, 0, rect.Width * Scale, rect.Height * Scale);
+
                 var selRect = getSelectionRectangle();
                 using (var b = new SolidBrush(Color.FromArgb(96, SystemColors.Highlight))) {
                     var tweak = ((_scale * 2) - 1) / 4;
                     e.Graphics.FillRectangle(b, selRect);
                     destRect.X += tweak;
-                    e.Graphics.DrawImage(_tileSource, destRect, rect, GraphicsUnit.Pixel);
+
+                    int rowNum = 0;
+                    int tilesPerRow = getTilesPerRow();
+                    int tilesRemaining = _tileCount;
+                    
+                    while (tilesRemaining > 0) {
+                        int tilesInThisRow = Math.Min(tilesRemaining, tilesPerRow);
+                        Rectangle source = new Rectangle(tilesPerRow * rowNum * _tileWidth, 0, tilesInThisRow * _tileWidth, _tileHeight);
+                        Rectangle dest = source;
+                        dest.X = 0 + tweak;
+                        dest.Y = _tileHeight * rowNum;
+
+                        dest.Width *= Scale;
+                        dest.Height *= Scale;
+
+                        e.Graphics.DrawImage(_tileSource, dest, source, GraphicsUnit.Pixel);
+
+                        rowNum++;
+                        tilesRemaining -= tilesInThisRow;
+                    }
+
+                    //e.Graphics.DrawImage(_tileSource, destRect, rect, GraphicsUnit.Pixel);
                     destRect.X -= tweak;
                     e.Graphics.FillRectangle(b, selRect);
                 }
@@ -143,7 +177,47 @@ namespace AutoTracker
 
         Rectangle getSelectionRectangle() {
             if (_tileSource == null) return new Rectangle(0, 0, 0, 0);
-            return new Rectangle(_selectedIndex * _tileSource.Height * _scale, 0, _tileSource.Height * _scale, _tileSource.Height * _scale);
+
+            int rowWidth = getTilesPerRow() * _tileWidth;
+
+            var result =  new Rectangle(_selectedIndex * _tileSource.Height, 0, _tileSource.Height, _tileSource.Height);
+
+            while (result.Left >= rowWidth) {
+                result.Y += _tileHeight;
+                result.X -= rowWidth;
+            }
+
+            result.X *= _scale;
+            result.Y *= _scale;
+            result.Width *= _scale;
+            result.Height *= _scale;
+
+            return result;
+        }
+
+        int getTilesPerRow() {
+            return this.Width / _tileWidth;
+        }
+
+        int PointToTileNum(int pixelX, int pixelY) {
+            if ((_tileHeight | _tileWidth) == 0) return -1;
+            if (pixelY < 0 | pixelX < 0) return -1;
+
+            int x = pixelX / _scale;
+            int y = pixelY / _scale;
+
+            int rowWidth = getTilesPerRow() * _tileWidth;
+            if (x >= rowWidth) return -1;
+
+            while (_tileHeight > 0 && y > _tileHeight) {
+                x += rowWidth;
+                y -= _tileHeight;
+            }
+
+            int maxSel = _tileSource.Width / _tileWidth; 
+            int value = x / _tileWidth;
+
+            return Math.Min(maxSel, value);
         }
 
         protected override void OnMouseDown(MouseEventArgs e) {
@@ -155,14 +229,13 @@ namespace AutoTracker
                 int maxSel = _tileSource.Width / _tileSource.Height; // exclusive
 
                 var selRect = getSelectionRectangle();
-                if (e.Y >= selRect.Top && e.Y < selRect.Bottom) {
-                    int value = e.X / selRect.Height;
+                //int value = e.X / selRect.Height;
+                int value = PointToTileNum(e.X, e.Y);
 
-                    if (value >= 0 && value < maxSel) {
-                        SelectedIndex = value;
-                        var evt = IndexSelected;
-                        if (evt != null) evt(this, EventArgs.Empty);
-                    }
+                if (value >= 0 && value < maxSel) {
+                    SelectedIndex = value;
+                    var evt = IndexSelected;
+                    if (evt != null) evt(this, EventArgs.Empty);
                 }
             }
         }

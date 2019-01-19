@@ -63,12 +63,14 @@ namespace AutoTracker
             mscMarkers.LayoutFile = layout;
             mscMarkers.LayoutName = "zelda";
             mscMarkers.MarkerSetPlacement = layout.layouts["zelda"].maps[0].markerSets[0];
-            mscMarkers.MarkerSetName = mscMarkers.MarkerSetPlacement.name;
+            //mscMarkers.MarkerSetName = mscMarkers.MarkerSetPlacement.name;
+            mscMarkers.MapPlacement = layout.layouts["zelda"].maps[0];
 
             mscMetMarkers.LayoutFile = layout;
             mscMetMarkers.LayoutName = "metroid";
             mscMetMarkers.MarkerSetPlacement = layout.layouts["metroid"].maps[0].markerSets[0];
-            mscMetMarkers.MarkerSetName = mscMetMarkers.MarkerSetPlacement.name;
+            //mscMetMarkers.MarkerSetName = mscMetMarkers.MarkerSetPlacement.name;
+            mscMetMarkers.MapPlacement = layout.layouts["metroid"].maps[0];
 
             LoadSettings();
         }

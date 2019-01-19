@@ -184,7 +184,7 @@
             this.mscMetMarkers.LayoutFile = null;
             this.mscMetMarkers.LayoutName = null;
             this.mscMetMarkers.Location = new System.Drawing.Point(154, 494);
-            this.mscMetMarkers.MarkerSetName = null;
+            this.mscMetMarkers.MapPlacement = null;
             this.mscMetMarkers.MarkerSetPlacement = null;
             this.mscMetMarkers.Name = "mscMetMarkers";
             this.mscMetMarkers.Scale = 3;
@@ -199,13 +199,13 @@
             this.mscMarkers.BackColor = System.Drawing.Color.Black;
             this.mscMarkers.LayoutFile = null;
             this.mscMarkers.LayoutName = null;
-            this.mscMarkers.Location = new System.Drawing.Point(18, 494);
-            this.mscMarkers.MarkerSetName = null;
+            this.mscMarkers.Location = new System.Drawing.Point(18, 447);
+            this.mscMarkers.MapPlacement = null;
             this.mscMarkers.MarkerSetPlacement = null;
             this.mscMarkers.Name = "mscMarkers";
             this.mscMarkers.Scale = 1;
             this.mscMarkers.SelectedIndex = 0;
-            this.mscMarkers.Size = new System.Drawing.Size(512, 32);
+            this.mscMarkers.Size = new System.Drawing.Size(512, 79);
             this.mscMarkers.TabIndex = 1;
             this.mscMarkers.Text = "markerSelectorControl1";
             // 
