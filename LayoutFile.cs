@@ -236,7 +236,7 @@ namespace AutoTracker
             if (this.y == null) this.y = mapBase.y;
             if (this.cellWidth == null) this.cellWidth = mapBase.cellWidth;
             if (this.cellHeight == null) this.cellHeight = mapBase.cellHeight;
-            if (this.backgrounds == null) this.backgrounds = mapBase.backgrounds;
+            if (this.backgrounds == null || this.backgrounds.Length == 0) this.backgrounds = mapBase.backgrounds;
 
             List<TrackerMarkerSetReference> markerSetList = new List<TrackerMarkerSetReference>();
             markerSetList.AddRange(mapBase.markerSets);
