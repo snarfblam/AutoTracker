@@ -23,3 +23,4 @@ Suggestions:
     + Delete stamp on right click, instead of changing it to selected, or deleting if it is already same as selected
     + It instantly goes to triforce when I get the compass
     + there should be a triple bomb since there are three bomb upgrades at max
+    + Also there's kraid/ridley compasses that you should probably add.

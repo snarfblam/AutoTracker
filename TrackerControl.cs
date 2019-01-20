@@ -14,6 +14,7 @@ namespace AutoTracker
 
         TrackerLayout _layout;
         LayoutRenderer _renderer;
+        LayoutMargin LayoutMargin { get { return _layout.margin ?? new LayoutMargin(); } }
 
         int updateLevel = 0;
 
@@ -110,17 +111,40 @@ namespace AutoTracker
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
 
+            LayoutMargin margin = new LayoutMargin();
+            if (_layout != null) margin = _layout.margin ?? new LayoutMargin();
+
+            Rectangle dest = e.ClipRectangle;
+            Rectangle source = dest;
+            source.X -= margin.left;
+            source.Y -= margin.top;
+
+            Rectangle renderedBounds = new Rectangle();
             if (_renderer != null) {
-                e.Graphics.DrawImage(_renderer.Image, e.ClipRectangle, e.ClipRectangle, GraphicsUnit.Pixel);
+                renderedBounds = new Rectangle(margin.left, margin.top, _renderer.Width, _renderer.Height);
+            }
+
+            // We only need to draw the backcolor of the invalid rect includes margins
+            if (!renderedBounds.Contains(e.ClipRectangle)) {
+                using (var b = new SolidBrush(this.BackColor)) {
+                    e.Graphics.FillRectangle(b, e.ClipRectangle);
+                }
+            }
+
+            // Draw rendered tracker image
+            if (_renderer != null) {
+                e.Graphics.DrawImage(_renderer.Image, dest, source, GraphicsUnit.Pixel);
             }
         }
 
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
 
+            Point p = new Point(e.X - _layout.margin.Value.left, e.Y - _layout.margin.Value.top);
+
             if (e.Button == System.Windows.Forms.MouseButtons.Left || e.Button == System.Windows.Forms.MouseButtons.Right) {
                 foreach (var indicator in _layout.indicators) {
-                    if (indicator.Value.ToRect().Contains(e.Location)) {
+                    if (indicator.Value.ToRect().Contains(p)) {
                         var evt = IndicatorClicked;
                         if (evt != null) {
                             evt(this, new IndicatorEventArgs(indicator.Key, e.Button));
@@ -130,9 +154,9 @@ namespace AutoTracker
                 }
                 foreach (var map in mapBounds) {
                     var bounds = map.Item1;
-                    if (bounds.Contains(e.Location)) {
-                        int x = (e.X - bounds.X) / map.Item0.cellWidth;
-                        int y = (e.Y - bounds.Y) / map.Item0.cellHeight;
+                    if (bounds.Contains(p)) {
+                        int x = (p.X - bounds.X) / map.Item0.cellWidth;
+                        int y = (p.Y - bounds.Y) / map.Item0.cellHeight;
 
                         var evt = MapCellClicked;
                         if (evt != null) {
@@ -148,7 +172,9 @@ namespace AutoTracker
         ///// </summary>
         //public override Size PreferredSize { get { return new Size(_renderer.Width, _renderer.Height); } }
         public override Size GetPreferredSize(Size proposedSize) {
-            return new Size(_renderer.Width, _renderer.Height); 
+            var width = _renderer.Width + LayoutMargin.left + LayoutMargin.right;
+            var height = _renderer.Height + LayoutMargin.top + LayoutMargin.bottom;
+            return new Size(width, height); 
         }
 
         public event EventHandler<IndicatorEventArgs> IndicatorClicked;

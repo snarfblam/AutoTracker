@@ -104,17 +104,26 @@ namespace AutoTracker
             //ToggleMaps();
         }
 
-        private void ToggleMaps() {
-            if (!mnuNoMap.Checked) {
-                showMet = !showMet;
+        private void ToggleMaps(bool hide) {
+            if (hide) {
+                mnuNoMap.Checked = true;
+            } else {
+                if (!mnuNoMap.Checked) {
+                    showMet = !showMet;
+                }
+                mnuNoMap.Checked = false;
             }
-            trackerUI.LayoutName = showMet ? "metroid" : "zelda";
+            string layoutName = showMet ? "metroid" : "zelda";
+            if (mnuNoMap.Checked) layoutName = "nomap";
+            trackerUI.LayoutName = layoutName;
             mnuZelda.Checked = !showMet;
             mnuMetroid.Checked = showMet;
             mscMarkers.Visible = !showMet;
             mscMetMarkers.Visible = showMet;
 
-            mnuNoMap.Checked = false;
+            if (!hide) {
+            }
+
             SetFormSize();
 
             if (mnuAutoTrack.Checked) {
@@ -122,6 +131,28 @@ namespace AutoTracker
             }
         }
 
+        private void HideMap() {
+            mnuZelda.Checked = false;
+            mnuMetroid.Checked = false;
+            mnuNoMap.Checked = true;
+            //SetFormSize();
+            ToggleMaps(true);
+        }
+
+        private void SetFormSize() {
+            if (mnuNoMap.Checked) {
+                //if (this.ClientSize.Height != 184) {
+                //    this.ClientSize = new Size(this.ClientSize.Width, 184);
+                //}
+                this.ClientSize = trackerUI.GetPreferredSize(this.ClientSize);
+
+            } else {
+                this.ClientSize = trackerUI.GetPreferredSize(this.ClientSize);
+                //if (this.ClientSize.Height != 529) {
+                //    this.ClientSize = new Size(this.ClientSize.Width, 529);
+                //}
+            }
+        }
         private void trackerControl1_IndicatorClicked(object sender, IndicatorEventArgs e) {
             //this.Text = e.Name;
             var amt = e.Button == System.Windows.Forms.MouseButtons.Left ? 1 : -1;
@@ -263,7 +294,7 @@ namespace AutoTracker
                 if (ModifierKeys == Keys.Control) {
                     HideMap();
                 } else {
-                    ToggleMaps();
+                    ToggleMaps(false);
                 }
                 e.Handled = true;
             }
@@ -285,11 +316,11 @@ namespace AutoTracker
         }
 
         private void mnuZelda_Click(object sender, EventArgs e) {
-            if (!mnuZelda.Checked) ToggleMaps();
+            if (!mnuZelda.Checked) ToggleMaps(false);
         }
 
         private void mnuMetroid_Click(object sender, EventArgs e) {
-            if (!mnuMetroid.Checked) ToggleMaps();
+            if (!mnuMetroid.Checked) ToggleMaps(false);
         }
 
         private void mnuHideDaBurger_Click(object sender, EventArgs e) {
@@ -317,24 +348,6 @@ namespace AutoTracker
             HideMap();
         }
 
-        private void HideMap() {
-            mnuZelda.Checked = false;
-            mnuMetroid.Checked = false;
-            mnuNoMap.Checked = true;
-            SetFormSize();
-        }
-
-        private void SetFormSize() {
-            if (mnuNoMap.Checked) {
-                if (this.ClientSize.Height != 184) {
-                    this.ClientSize = new Size(this.ClientSize.Width, 184);
-                }
-            } else {
-                if (this.ClientSize.Height != 529) {
-                    this.ClientSize = new Size(this.ClientSize.Width, 529);
-                }
-            }
-        }
 
         private void mnuReset_Click(object sender, EventArgs e) {
             trackerUI.ResetTracker();

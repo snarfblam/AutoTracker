@@ -139,24 +139,17 @@ namespace AutoTracker
                 markerSets.AddRange(map.markerSets);
                 markerSets.AddRange(mapPlacement.markerSets);
 
-                x = placement.x ?? map.x;
-                y = placement.y ?? map.y;
-                cellWidth = placement.cellWidth ?? map.cellWidth;
-                cellHeight = placement.cellHeight ?? map.cellHeight;
+                x = placement.x ?? 0;
+                y = placement.y ?? 0;
+                cellWidth = placement.cellWidth ?? 1;
+                cellHeight = placement.cellHeight ?? 1;
                 gridWidth = map.gridWidth;
                 gridHeight = map.gridHeight;
                 StateName = placement.stateName ?? map.stateName;
 
                 var placementBackgrounds = placement.backgrounds ?? new string[0];
-                backgrounds = new Bitmap[Math.Max(placementBackgrounds.Length, map.backgrounds.Length)];
-                for (int i = 0; i < backgrounds.Length; i++) {
-                    // Prefer backgrounds from placement, but fall back to map definition if the placement doesn't provide enough to supercede all of them
-                    if (i < placementBackgrounds.Length) {
-                        backgrounds[i] = owner.trackerDefinition.Meta.GetImage(placement.backgrounds[i]);
-                    } else {
-                        backgrounds[i] = owner.trackerDefinition.Meta.GetImage(map.backgrounds[i]);
-                    }
-                }
+                backgrounds = new Bitmap[placementBackgrounds.Length];
+                for (var i = 0; i < placementBackgrounds.Length; i++) backgrounds[i] = owner.trackerDefinition.Meta.GetImage(map.backgrounds[i]);
 
             }
 
