@@ -53,17 +53,38 @@ namespace AutoTracker
         }
     }
 
+    class TrackerPickerPlacement
+    {
+        public int x { get; set; }
+        public int y { get; set; }
+        public int? width { get; set; }
+        public int? height { get; set; }
+        public int? scale { get; set; }
+
+        public void ApplyEffectiveValues(TrackerLayoutFile file, TrackerMarkerSetReference markerSet) {
+            if (scale == null || scale < 1) scale = 1;
+
+            if (width == null || height == null) {
+                var image = file.Meta.GetImage(markerSet.source);
+                width = width ?? (image.Width * scale);
+                height = height ?? (image.Height * scale);
+            }
+
+        }
+    }
+
     class TrackerLayoutFile
     {
         public TrackerLayoutFile() {
             this.Meta = new TrackerMeta(this);
-            this.Files = new Dictionary<string, string>();
+            this.files = new Dictionary<string, string>();
             this.layouts = new Dictionary<string, TrackerLayout>();
             this.maps = new Dictionary<string, TrackerMap>();
             this.markerSets = new Dictionary<string, TrackerMapMarker[]>();
         }
 
-        public Dictionary<string, string> Files { get; set; }
+        public string version { get; set; }
+        public Dictionary<string, string> files { get; set; }
         public Dictionary<string, TrackerLayout> layouts { get; set; }
         public Dictionary<string, TrackerMap> maps { get; set; }
         public Dictionary<string, TrackerMapMarker[]> markerSets { get; set; }
@@ -212,6 +233,9 @@ namespace AutoTracker
     {
         public string name { get; set; }
         public string source { get; set; }
+        public TrackerPickerPlacement picker { get; set; }
+
+
     }
 
     class TrackerMapPlacement
@@ -242,7 +266,14 @@ namespace AutoTracker
             markerSetList.AddRange(mapBase.markerSets);
             markerSetList.AddRange(this.markerSets);
             this.markerSets = markerSetList.ToArray();
+
+            foreach (var m in this.markerSets) {
+                if (m.picker != null) {
+                    m.picker.ApplyEffectiveValues(file, m);
+                }
+            }
         }
+
     }
 
     class TrackerMapMarker

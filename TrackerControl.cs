@@ -8,13 +8,15 @@ namespace AutoTracker
 {
     class TrackerControl: Control
     {
-        TrackerLayoutFile _tracker;
+        TrackerLayoutFile _layoutFile;
         string _layoutName;
         string _unloadingLayoutName;
 
         TrackerLayout _layout;
         LayoutRenderer _renderer;
         LayoutMargin LayoutMargin { get { return _layout.margin ?? new LayoutMargin(); } }
+
+        MarkerSelectorControl pickerControl;
 
         int updateLevel = 0;
 
@@ -28,13 +30,17 @@ namespace AutoTracker
         public TrackerControl() {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
             CacheViews = true;
+
+            pickerControl = new MarkerSelectorControl();
+            pickerControl.Visible = false;
+            this.Controls.Add(pickerControl);
         }
 
         public TrackerLayoutFile Tracker {
-            get { return _tracker; }
+            get { return _layoutFile; }
             set {
-                if (value == _tracker) return;
-                _tracker = value;
+                if (value == _layoutFile) return;
+                _layoutFile = value;
                 InitializeTracker();
             }
         }
@@ -57,11 +63,11 @@ namespace AutoTracker
             bool isEmpty = _layout == null;
             bool willBeEmpty = false;
 
-            if (_tracker == null || _layoutName == null) {
+            if (_layoutFile == null || _layoutName == null) {
                 willBeEmpty = true;
             } else {
                 TrackerLayout l;
-                if (!_tracker.layouts.TryGetValue(_layoutName, out l)) willBeEmpty = true;
+                if (!_layoutFile.layouts.TryGetValue(_layoutName, out l)) willBeEmpty = true;
             }
 
             if (!isEmpty && willBeEmpty) {
@@ -70,18 +76,18 @@ namespace AutoTracker
                 // ACTUALLY INITIALIZE
                 FreeLayoutResources();
 
-                _layout = _tracker.layouts[_layoutName];
+                _layout = _layoutFile.layouts[_layoutName];
                 if (cachedViews.ContainsKey(_layoutName)) {
                     _renderer = cachedViews[_layoutName];
                     _renderer.Update(); // Todo: determine if cached views should update in realtime, or if not, they should at least to allow redundant invalidations
                 } else {
-                    _renderer = new LayoutRenderer(_tracker, _layoutName);
+                    _renderer = new LayoutRenderer(_layoutFile, _layoutName);
                     if (CacheViews && !cachedViews.ContainsKey(_layoutName)) {
                         cachedViews.Add(_layoutName, _renderer);
                     }
                 }
                 foreach (var placement in _layout.maps) {
-                    var mmap = _tracker.GetEffectiveMetrics(placement);
+                    var mmap = _layoutFile.GetEffectiveMetrics(placement);
                     Rectangle bounds = new Rectangle(
                         mmap.x,
                         mmap.y,
@@ -90,8 +96,52 @@ namespace AutoTracker
                     );
                     mapBounds.Add(Tuple.Create(mmap, bounds));
                 }
+
+                SetupPicker();
                 Invalidate(new Rectangle(0,0, _renderer.Width, _renderer.Height));
             }
+        }
+
+        public int SelectedMarker { get { return pickerControl.SelectedIndex; } set { pickerControl.SelectedIndex = value; } }
+
+        private void SetupPicker() {
+            TrackerMarkerSetReference markerSet;
+            TrackerMapPlacement map;
+
+            var picker = FindPicker(out map, out markerSet);
+
+            if (picker == null) {
+                pickerControl.Visible = false;
+            } else {
+                var margin = this.LayoutMargin;
+
+                pickerControl.Bounds = new Rectangle(
+                    picker.x + margin.left,
+                    picker.y + margin.top,
+                    picker.width.Value, picker.height.Value);
+
+                pickerControl.LayoutFile = _layoutFile;
+                pickerControl.LayoutName = _layoutName;
+                pickerControl.MarkerSetPlacement = markerSet;
+                pickerControl.MapPlacement = map;
+                pickerControl.Scale = picker.scale ?? 1;
+
+                pickerControl.Visible = true;
+            }
+        }
+        private TrackerPickerPlacement FindPicker(out TrackerMapPlacement mapPlacement, out TrackerMarkerSetReference markerSet) {
+            markerSet = null;
+            mapPlacement = null;
+
+            foreach (var map in _layout.maps) {
+                foreach (var marker in map.markerSets) {
+                    markerSet = marker;
+                    mapPlacement = map;
+                    if (marker.picker != null) return marker.picker;
+                }
+            }
+
+            return null;
         }
 
         private void FreeLayoutResources() {
@@ -195,7 +245,7 @@ namespace AutoTracker
         /// </summary>
         public TrackerUpdate BeginUpdate() {
             updateLevel++;
-            return new TrackerUpdate(this, this._tracker.Meta.State);
+            return new TrackerUpdate(this, this._layoutFile.Meta.State);
         }
 
         public void EndUpdate(TrackerUpdate scope) {
@@ -234,7 +284,7 @@ namespace AutoTracker
         }
 
         internal void ResetTracker() {
-            _tracker.Meta.State.Reset();
+            _layoutFile.Meta.State.Reset();
             _renderer.UpdateAll();
             Invalidate();
         }

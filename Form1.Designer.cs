@@ -183,7 +183,7 @@
             this.mscMetMarkers.BackColor = System.Drawing.Color.Black;
             this.mscMetMarkers.LayoutFile = null;
             this.mscMetMarkers.LayoutName = null;
-            this.mscMetMarkers.Location = new System.Drawing.Point(154, 494);
+            this.mscMetMarkers.Location = new System.Drawing.Point(365, 494);
             this.mscMetMarkers.MapPlacement = null;
             this.mscMetMarkers.MarkerSetPlacement = null;
             this.mscMetMarkers.Name = "mscMetMarkers";
@@ -199,7 +199,7 @@
             this.mscMarkers.BackColor = System.Drawing.Color.Black;
             this.mscMarkers.LayoutFile = null;
             this.mscMarkers.LayoutName = null;
-            this.mscMarkers.Location = new System.Drawing.Point(18, 447);
+            this.mscMarkers.Location = new System.Drawing.Point(432, 445);
             this.mscMarkers.MapPlacement = null;
             this.mscMarkers.MarkerSetPlacement = null;
             this.mscMarkers.Name = "mscMarkers";
@@ -208,14 +208,17 @@
             this.mscMarkers.Size = new System.Drawing.Size(512, 79);
             this.mscMarkers.TabIndex = 1;
             this.mscMarkers.Text = "markerSelectorControl1";
+            this.mscMarkers.Visible = false;
             // 
             // trackerUI
             // 
             this.trackerUI.BackColor = System.Drawing.Color.Black;
+            this.trackerUI.Dock = System.Windows.Forms.DockStyle.Fill;
             this.trackerUI.LayoutName = null;
-            this.trackerUI.Location = new System.Drawing.Point(1, 0);
+            this.trackerUI.Location = new System.Drawing.Point(0, 0);
             this.trackerUI.Name = "trackerUI";
-            this.trackerUI.Size = new System.Drawing.Size(529, 491);
+            this.trackerUI.SelectedMarker = 0;
+            this.trackerUI.Size = new System.Drawing.Size(549, 529);
             this.trackerUI.TabIndex = 0;
             this.trackerUI.Text = "trackerControl1";
             this.trackerUI.Tracker = null;

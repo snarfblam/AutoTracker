@@ -1,10 +1,13 @@
 ﻿Todo:
+    - Remove stamp pickers from Form1
+    - Maintain corresponding stamp selection for each map (probably keep a dictionary<string, int> that is updated each time the layout changes
     - Remove redundancies in tracker file format.
         - E.g. allowing to specify attributes of a map in either the map definition or the placement makes for confusion
         - Is there even a need to define and place maps separately? It's intended as a convenince for when the same map appears on multiple layouts, but may not be worth the trouble.
     - Change map marker set stacking to map marker set replacement (this will probably become irrelevant if redundancies are removed anyways).
     - There can be up to three bomb upgrades. Layout image needs to account for this.
     - Change bomb icon (for example, +4, +8, +12 instead of stacking bomb images)
+    - Refactor UI management in Form1. Has become increasingly adhoc and messy with each update.
 
 Suggestions:
 

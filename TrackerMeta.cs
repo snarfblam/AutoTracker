@@ -40,7 +40,7 @@ namespace AutoTracker
             if (!images.TryGetValue(path, out result)) {
                 if (path.StartsWith("!/") || path.StartsWith("!\\")) {
                     var embeddedFileName = path.Substring(2);
-                    var base64 = File.Files[embeddedFileName];
+                    var base64 = File.files[embeddedFileName];
                     var bytes = Convert.FromBase64String(base64);
                     var stream = new MemoryStream(bytes);
 

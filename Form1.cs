@@ -118,11 +118,8 @@ namespace AutoTracker
             trackerUI.LayoutName = layoutName;
             mnuZelda.Checked = !showMet;
             mnuMetroid.Checked = showMet;
-            mscMarkers.Visible = !showMet;
-            mscMetMarkers.Visible = showMet;
-
-            if (!hide) {
-            }
+            //mscMarkers.Visible = !showMet;
+            //mscMetMarkers.Visible = showMet;
 
             SetFormSize();
 
@@ -185,7 +182,7 @@ namespace AutoTracker
 
                         update.State.ClearMarker("zmarkers", e.Coords.X, e.Coords.Y);
 
-                        var newValue = mscMarkers.SelectedIndex;
+                        var newValue = trackerUI.SelectedMarker;
                         if (newValue != currentValue) {
                             update.State.AddMarker("zmarkers", e.Coords.X, e.Coords.Y, newValue);
                         }
@@ -196,7 +193,7 @@ namespace AutoTracker
 
                         update.State.ClearMarker("mmarkers", e.Coords.X, e.Coords.Y);
 
-                        var newValue = mscMetMarkers.SelectedIndex;
+                        var newValue = trackerUI.SelectedMarker;
                         if (newValue != currentValue) {
                             update.State.AddMarker("mmarkers", e.Coords.X, e.Coords.Y, newValue);
                         }

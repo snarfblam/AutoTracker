@@ -62,6 +62,7 @@
 
 
 <File>: {
+    version: string,                        // Layout version number
     files?: {                               //  Image files may be embedded
         (name)...: string                   //      Property name is the filename, and contents should be Base64-encoded 
     },
@@ -88,7 +89,7 @@
         left: number,
         bottom: number,
         right: number
-    }
+    },
 
 }
 
@@ -112,7 +113,9 @@
         source: string                      // File name. The image will be divided into tiles matching the map's cell size to use for each level.
     }[],
     backgrounds?: string[],                 // An array of filenames if the map is not to inherit its background layers from the layout
-    stateName?: string                      // Any maps which share a statename share map data. Should not start with underscore.
+    stateName?: string,                     // Any maps which share a statename share map data. Should not start with underscore.
+    markerPicker?: [                        // 
+    ]
 }
 
 <MapPlacement>: {                           // Each optional property will override the value inherited from the map definition
@@ -120,7 +123,7 @@
     markerSets?: {                           // STACK with underlying map's markers
         name: string,
         source: string,                     // File name. The image will be divided into tiles matching the map's cell size to use for each level.
-        picker?: {                          // Stamp selection UI
+        picker?: {                          // Stamp selection UI. Currently, only one is permitted per layout.
             x: number,                      // Coordinates, in pixels, relative to top-left of layout background (i.e. does not include margins)
             y: number,                      // The picker is permitted to occupy the margin (partially or completely)
             width?: number,                 // Size, in pixels. Defaults to width of marker source image multiplied by scale. Note that a marker picker will wrap if it is not wide enough to show all markers in one row.
