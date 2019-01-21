@@ -16,6 +16,19 @@ namespace AutoTracker
         LayoutRenderer _renderer;
         LayoutMargin LayoutMargin { get { return _layout.margin ?? new LayoutMargin(); } }
 
+        Dictionary<string, int> LayoutMarkerSelections = new Dictionary<string, int>();
+        /// <summary>To be called while loading a new layout to retrieve the previous marker selection for that layout</summary>
+        int GetLayoutMarkerSelection(string layout) {
+            int result;
+            if (LayoutMarkerSelections.TryGetValue(layout, out result)) return result;
+            return 0;
+        }
+        /// <summary>To be called before loading a new layout to cache the marker selection</summary>
+        void SetLayoutMarkerSelection(string layout, int value) {
+            if (string.IsNullOrEmpty(layout)) return;
+            LayoutMarkerSelections[layout] = value;
+        }
+
         MarkerSelectorControl pickerControl;
 
         int updateLevel = 0;
@@ -49,6 +62,8 @@ namespace AutoTracker
             get { return _layoutName; }
             set {
                 if (value == _layoutName) return;
+
+                SetLayoutMarkerSelection(_layoutName, pickerControl.SelectedIndex);
                 _unloadingLayoutName = _layoutName;
                 _layoutName = value;
                 InitializeTracker();
@@ -126,6 +141,7 @@ namespace AutoTracker
                 pickerControl.MapPlacement = map;
                 pickerControl.Scale = picker.scale ?? 1;
 
+                pickerControl.SelectedIndex = GetLayoutMarkerSelection(_layoutName);
                 pickerControl.Visible = true;
             }
         }

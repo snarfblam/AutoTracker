@@ -1,4 +1,5 @@
 ﻿Todo:
+    - Bug with triforce/compass 9
     - Remove stamp pickers from Form1
     - Maintain corresponding stamp selection for each map (probably keep a dictionary<string, int> that is updated each time the layout changes
     - Remove redundancies in tracker file format.
@@ -9,6 +10,9 @@
     - Change bomb icon (for example, +4, +8, +12 instead of stacking bomb images)
     - Refactor UI management in Form1. Has become increasingly adhoc and messy with each update.
 
+Down the road:
+    - Make the layout list and selection (menu and shortcut keys) data driven
+
 Suggestions:
 
 -Zilla:
@@ -17,6 +21,7 @@ Suggestions:
     - checkbox next to item for "obtained", clicking item sets it as paint.
     - Separate set of items for stamps.
     - Different buttons for "set as brush" and "mark as obtained"
+    - There was interface discussion earlier, regarding what input to use for smaller markers. I propose shift+click
 -Cubixthree
     - I was thinking that you could drag an item to the spot it's in, then when you get it, click on the item and it turns gray.
     + (Re: bomb icon) you could make it one bomb, but with +4 and +8
@@ -27,3 +32,4 @@ Suggestions:
     + It instantly goes to triforce when I get the compass
     + there should be a triple bomb since there are three bomb upgrades at max
     + Also there's kraid/ridley compasses that you should probably add.
+    + What if there were a way to make it so that stamps could be displayed in a menu when u double click on a square? for infinite stamps?
