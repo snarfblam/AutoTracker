@@ -49,7 +49,7 @@ namespace AutoTracker
             trackinator.AddRule("tri6", json => Math.Max(json("zelda.triforces.5") * 2, json("zelda.compasses.5") ));
             trackinator.AddRule("tri7", json => Math.Max(json("zelda.triforces.6") * 2, json("zelda.compasses.6") ));
             trackinator.AddRule("tri8", json => Math.Max(json("zelda.triforces.7") * 2, json("zelda.compasses.7") ));
-            trackinator.AddRule("tri9", json => Math.Max(json("zflags.triforce_of_power") * 3, json("zelda.compasses.8") * 2));
+            trackinator.AddRule("tri9", json => Math.Max(json("zflags.triforce_of_power") * 2, json("zelda.compasses.8")));
 
 
             this.Text = this.Text.Replace("@", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor.ToString());
