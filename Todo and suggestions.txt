@@ -1,6 +1,6 @@
 ﻿Todo:
-    + Delete stamp on right click, instead of changing it to selected, or deleting if it is already same as selected
     - Implement mini-only marker mode
+    - Ridley/Kraid compasses are not auto-tracked
 
     - Remove stamp pickers from Form1
     - Maintain corresponding stamp selection for each map (probably keep a dictionary<string, int> that is updated each time the layout changes
