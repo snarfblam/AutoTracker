@@ -243,6 +243,7 @@ namespace AutoTracker
         public TrackerMapPlacement() {
             this.backgrounds = Empty<string>.Array;
             this.markerSets = Empty<TrackerMarkerSetReference>.Array;
+            this.sizeMode = "normal";
         }
         public string name { get; set; }
         public TrackerMarkerSetReference[] markerSets { get; set; }
@@ -252,6 +253,8 @@ namespace AutoTracker
         public int? cellHeight { get; set; }
         public string[] backgrounds { get; set; }
         public string stateName { get; set; }
+        /// <summary>Defaults to 'normal', can also be 'mini' or 'mixed'</summary>
+        public string sizeMode { get; set; }
 
         internal void ApplyEffectiveValues(TrackerLayoutFile file) {
             var mapBase = file.maps[this.name];

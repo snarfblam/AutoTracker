@@ -124,7 +124,36 @@ namespace AutoTracker
             }
         }
 
+        public void AddMiniMarker(string markerSet, int x, int y, CellQuadrant quad, int value) {
+            MapMarkerList markers;
+            if (markerSets.TryGetValue(markerSet, out markers)) {
+                markers.Add(new MapMarker(x, y, value, quad));
+                foreach (var l in listeners) l.NotifyMarkerChanged(markerSet, x, y);
+            }
+        }
+
         public void ClearMarker(string markerSet, int x, int y) {
+            MapMarkerList markers;
+            if (markerSets.TryGetValue(markerSet, out markers)) {
+                int removedCount = markers.RemoveAll(entry => entry.X == x && entry.Y == y && entry.Quad == null);
+                if (removedCount > 0) {
+                    foreach (var l in listeners) l.NotifyMarkerChanged(markerSet, x, y);
+                }
+            }
+        }
+
+        public void ClearMiniMarker(string markerSet, int x, int y, CellQuadrant quad) {
+            MapMarkerList markers;
+            if (markerSets.TryGetValue(markerSet, out markers)) {
+                int removedCount = markers.RemoveAll(entry => entry.X == x && entry.Y == y && entry.Quad == quad);
+                if (removedCount > 0) {
+                    foreach (var l in listeners) l.NotifyMarkerChanged(markerSet, x, y);
+                }
+            }
+        }
+
+        /// <summary>Clears any full-size or mini markers in the cell</summary>
+        public void ClearAnyMarker(string markerSet, int x, int y) {
             MapMarkerList markers;
             if (markerSets.TryGetValue(markerSet, out markers)) {
                 int removedCount = markers.RemoveAll(entry => entry.X == x && entry.Y == y);
@@ -134,13 +163,47 @@ namespace AutoTracker
             }
         }
 
-        private static readonly IList<int> emptyMarkerList = (new List<int>()).AsReadOnly();
+        private static readonly IList<int> emptyValueList = (new List<int>()).AsReadOnly();
+        private static readonly IList<MapMarker> emptyMarkerList = (new List<MapMarker>()).AsReadOnly();
         public IList<int> GetMarkers(string markerSet, int x, int y) {
             MapMarkerList markerState;
             if (this.markerSets.TryGetValue(markerSet, out markerState)) {
                 var result = markerState
-                    .FindAll(marker => (marker.X == x) & (marker.Y == y))
+                    .FindAll(marker => (marker.X == x) & (marker.Y == y) && (marker.Quad == null))
                     .ConvertAll(marker => marker.Value);
+                return result;
+            } else {
+                return emptyValueList;
+            }
+        }
+
+        public IList<int> GetMiniMarkers(string markerSet, int x, int y, CellQuadrant quad) {
+            MapMarkerList markerState;
+            if (this.markerSets.TryGetValue(markerSet, out markerState)) {
+                var result = markerState
+                    .FindAll(marker => (marker.X == x) & (marker.Y == y) & (marker.Quad == quad))
+                    .ConvertAll(marker => marker.Value);
+                return result;
+            } else {
+                return emptyValueList;
+            }
+        }
+        public IList<int> GetMiniMarkers(string markerSet, int x, int y) {
+            MapMarkerList markerState;
+            if (this.markerSets.TryGetValue(markerSet, out markerState)) {
+                var result = markerState
+                    .FindAll(marker => (marker.X == x) & (marker.Y == y) & (marker.Quad != null))
+                    .ConvertAll(marker => marker.Value);
+                return result;
+            } else {
+                return emptyValueList;
+            }
+        }
+        public IList<MapMarker> GetAllMarkers(string markerSet, int x, int y) {
+            MapMarkerList markerState;
+            if (this.markerSets.TryGetValue(markerSet, out markerState)) {
+                var result = markerState
+                    .FindAll(marker => (marker.X == x) & (marker.Y == y));
                 return result;
             } else {
                 return emptyMarkerList;
@@ -152,6 +215,7 @@ namespace AutoTracker
     {
         int bufferWidth;
         int bufferHeight;
+        /// <summary>Contains map data for full-size stamps</summary>
         int [,] buffer = new int[0,0];
 
         public int Width { get { return bufferWidth; } }
@@ -192,7 +256,13 @@ namespace AutoTracker
             Array.Clear(buffer, 0, buffer.Length);
         }
     }
-
+    enum CellQuadrant
+    {
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
+    }
     class MapMarkerList:List<MapMarker>
     {
 
@@ -200,6 +270,13 @@ namespace AutoTracker
 
     struct MapMarker
     {
+        public MapMarker(int x, int y, int value, CellQuadrant quad)
+            : this() {
+            this.X = x;
+            this.Y = y;
+            this.Value = value;
+            this.Quad = quad;
+        }
         public MapMarker(int x, int y, int value) 
         :this(){
             this.X = x;
@@ -209,6 +286,7 @@ namespace AutoTracker
         public int X { get; private set; }
         public int Y { get; private set; }
         public int Value { get; private set; }
+        public CellQuadrant? Quad { get; set; }
     }
 
     interface IStateListener

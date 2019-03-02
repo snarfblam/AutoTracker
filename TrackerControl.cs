@@ -203,12 +203,13 @@ namespace AutoTracker
             }
         }
 
+        private static readonly CellQuadrant[] quads = { CellQuadrant.TopLeft, CellQuadrant.TopRight, CellQuadrant.BottomLeft, CellQuadrant.BottomRight };
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
 
             Point p = new Point(e.X - _layout.margin.Value.left, e.Y - _layout.margin.Value.top);
 
-            if (e.Button == System.Windows.Forms.MouseButtons.Left || e.Button == System.Windows.Forms.MouseButtons.Right) {
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle) {
                 foreach (var indicator in _layout.indicators) {
                     if (indicator.Value.ToRect().Contains(p)) {
                         var evt = IndicatorClicked;
@@ -221,12 +222,21 @@ namespace AutoTracker
                 foreach (var map in mapBounds) {
                     var bounds = map.Item1;
                     if (bounds.Contains(p)) {
-                        int x = (p.X - bounds.X) / map.Item0.cellWidth;
-                        int y = (p.Y - bounds.Y) / map.Item0.cellHeight;
+                        var cellWidth = map.Item0.cellWidth;
+                        var cellHeight = map.Item0.cellHeight;
+                        var relX = (p.X - bounds.X);
+                        var relY = (p.Y - bounds.Y);
 
+                        int x = relX / cellWidth;
+                        int y = relY / cellHeight;
+
+                        var qX = (relX % cellWidth) >= (cellWidth / 2) ? 1 : 0;
+                        var qY = (relY % cellHeight) >= (cellHeight / 2) ? 2 : 0;
+                        var quad = quads[qX + qY];
+    
                         var evt = MapCellClicked;
                         if (evt != null) {
-                            evt(this, new GridEventArgs(map.Item0.name, e.Button, new Point(x, y)));
+                            evt(this, new GridEventArgs(map.Item0.name, e.Button, new Point(x, y), quad));
                         }
                     }
                 }
@@ -320,14 +330,16 @@ namespace AutoTracker
     }
     class GridEventArgs : EventArgs
     {
-        public GridEventArgs(string name, MouseButtons button, Point coords) {
+        public GridEventArgs(string name, MouseButtons button, Point coords, CellQuadrant quad) {
             this.Name = name;
             this.Button = button;
             this.Coords = coords;
+            this.Quadrant = quad;
         }
 
         public string Name { get; private set; }
         public MouseButtons Button { get; private set; }
         public Point Coords { get; private set; }
+        public CellQuadrant Quadrant { get; private set; }
     }
 }

@@ -31,7 +31,10 @@
             System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
             System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
             System.Windows.Forms.ToolStripMenuItem mnuLayouts;
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            this.mnuLayoutZ1m1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuLayoutCustom = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuLayoutFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.fswPlayerStatus = new System.IO.FileSystemWatcher();
             this.burger = new System.Windows.Forms.PictureBox();
@@ -50,6 +53,7 @@
             toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             mnuLayouts = new System.Windows.Forms.ToolStripMenuItem();
+            toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             ((System.ComponentModel.ISupportInitialize)(this.fswPlayerStatus)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.burger)).BeginInit();
             this.trackerMenu.SuspendLayout();
@@ -81,10 +85,32 @@
             // mnuLayouts
             // 
             mnuLayouts.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuLayoutZ1m1,
+            this.mnuLayoutCustom,
+            toolStripSeparator4,
             this.mnuLayoutFolder});
             mnuLayouts.Name = "mnuLayouts";
             mnuLayouts.Size = new System.Drawing.Size(188, 22);
             mnuLayouts.Text = "Layouts";
+            // 
+            // mnuLayoutZ1m1
+            // 
+            this.mnuLayoutZ1m1.Name = "mnuLayoutZ1m1";
+            this.mnuLayoutZ1m1.Size = new System.Drawing.Size(178, 22);
+            this.mnuLayoutZ1m1.Text = "Z1M1";
+            this.mnuLayoutZ1m1.Click += new System.EventHandler(this.mnuLayoutZ1m1_Click);
+            // 
+            // mnuLayoutCustom
+            // 
+            this.mnuLayoutCustom.Name = "mnuLayoutCustom";
+            this.mnuLayoutCustom.Size = new System.Drawing.Size(178, 22);
+            this.mnuLayoutCustom.Text = "Custom";
+            this.mnuLayoutCustom.Click += new System.EventHandler(this.mnuLayoutCustom_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new System.Drawing.Size(175, 6);
             // 
             // mnuLayoutFolder
             // 
@@ -263,6 +289,8 @@
         private MarkerSelectorControl mscMetMarkers;
         private System.Windows.Forms.ToolStripMenuItem mnuNoMap;
         private System.Windows.Forms.ToolStripMenuItem mnuLayoutFolder;
+        private System.Windows.Forms.ToolStripMenuItem mnuLayoutZ1m1;
+        private System.Windows.Forms.ToolStripMenuItem mnuLayoutCustom;
     }
 }
 

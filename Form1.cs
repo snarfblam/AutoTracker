@@ -89,7 +89,30 @@ namespace AutoTracker
 
         private void LoadSettings() {
             SetCheeseburgerVisible(!Program.Settings.hideBurger);
+            SetLayoutSelection(Program.Settings.layout);
             SetTrackingMode(Program.Settings.autoTrack);
+        }
+
+        private void SetLayoutSelection(string layout) {
+            Program.Settings.layout = layout;
+            if (layout == Settings.Layouts.Custom) {
+                mnuLayoutCustom.Checked = true;
+                mnuLayoutZ1m1.Checked = false;
+
+                string layoutData, layoutRoot;
+                Program.LoadExternalLayoutFile(out layoutData, out layoutRoot);
+                var layoutObj = LayoutFileParser.Parse(layoutData);
+
+                if (layoutRoot != null) {
+                    layoutObj.Meta.RootPath = layoutRoot;
+                }
+            } else { //if (layout == Settings.Layouts.Z1M1) { 
+                // Catch all
+                Program.Settings.layout = Settings.Layouts.Z1M1;
+                mnuLayoutCustom.Checked = false;
+                mnuLayoutZ1m1.Checked = true;
+                setLayout(LayoutFileParser.Parse(AutoTracker.Properties.Resources.z1m1PackedLayout));
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e) {
@@ -172,34 +195,57 @@ namespace AutoTracker
         }
 
         private void trackerControl1_MapCellClicked(object sender, GridEventArgs e) {
-            //this.Text = e.Coords.ToString();
-            if (e.Button == System.Windows.Forms.MouseButtons.Right) {
+            var zelda = mnuZelda.Checked;
+            var markerSet = zelda ? "zmarkers" : "mmarkers";
+
+            var miniMarkerClick = zelda && (e.Button == MouseButtons.Middle | (ModifierKeys == Keys.Control && e.Button == MouseButtons.Left));
+            var markerClick = e.Button == System.Windows.Forms.MouseButtons.Right;
+            var stateClick = !miniMarkerClick && e.Button == System.Windows.Forms.MouseButtons.Left;
+
+            if (miniMarkerClick) {
                 using (var update = trackerUI.BeginUpdate()) {
-                    if (mnuZelda.Checked) {
-                        var currentValue = -1;
-                        var currentMarkers = update.State.GetMarkers("zmarkers", e.Coords.X, e.Coords.Y);
-                        foreach (var m in currentMarkers) currentValue = m;
+                    var currentValue = -1;
+                    var currentMarkers = update.State.GetMiniMarkers(markerSet, e.Coords.X, e.Coords.Y, e.Quadrant);
+                    foreach (var m in currentMarkers) currentValue = m;
 
-                        update.State.ClearMarker("zmarkers", e.Coords.X, e.Coords.Y);
+                    update.State.ClearMiniMarker(markerSet, e.Coords.X, e.Coords.Y, e.Quadrant);
 
-                        var newValue = trackerUI.SelectedMarker;
-                        if (newValue != currentValue) {
-                            update.State.AddMarker("zmarkers", e.Coords.X, e.Coords.Y, newValue);
-                        }
-                    } else {
-                        var currentValue = -1;
-                        var currentMarkers = update.State.GetMarkers("mmarkers", e.Coords.X, e.Coords.Y);
-                        foreach (var m in currentMarkers) currentValue = m;
-
-                        update.State.ClearMarker("mmarkers", e.Coords.X, e.Coords.Y);
-
-                        var newValue = trackerUI.SelectedMarker;
-                        if (newValue != currentValue) {
-                            update.State.AddMarker("mmarkers", e.Coords.X, e.Coords.Y, newValue);
+                    var newValue = trackerUI.SelectedMarker;
+                    if (currentValue == -1) {
+                        if (zelda) {
+                            update.State.AddMiniMarker(markerSet, e.Coords.X, e.Coords.Y, e.Quadrant, newValue);
+                        } else {
+                            update.State.AddMarker(markerSet, e.Coords.X, e.Coords.Y, newValue);
                         }
                     }
                 }
-            } else if (e.Button == System.Windows.Forms.MouseButtons.Left) {
+            } else if (markerClick) {
+                using (var update = trackerUI.BeginUpdate()) {
+                    //if (mnuZelda.Checked) {
+                        var currentValue = -1;
+                        var currentMarkers = update.State.GetAllMarkers(markerSet, e.Coords.X, e.Coords.Y);
+                        foreach (var m in currentMarkers) currentValue = m.Value;
+
+                        update.State.ClearAnyMarker(markerSet, e.Coords.X, e.Coords.Y);
+
+                        var newValue = trackerUI.SelectedMarker;
+                        if (currentValue == -1) {
+                            update.State.AddMarker(markerSet, e.Coords.X, e.Coords.Y, newValue);
+                        }
+                    //} else {
+                    //    var currentValue = -1;
+                    //    var currentMarkers = update.State.GetMarkers(markerSet, e.Coords.X, e.Coords.Y);
+                    //    foreach (var m in currentMarkers) currentValue = m;
+
+                    //    update.State.ClearAnyMarker(markerSet, e.Coords.X, e.Coords.Y);
+
+                    //    var newValue = trackerUI.SelectedMarker;
+                    //    if (newValue != currentValue) {
+                    //        update.State.AddMarker(markerSet, e.Coords.X, e.Coords.Y, newValue);
+                    //    }
+                    //}
+                }
+            } else if (stateClick) {
                 var amt = e.Button == System.Windows.Forms.MouseButtons.Left ? 1 : -1;
                 using (var update = trackerUI.BeginUpdate()) {
                     var lvl = 1 - update.State.GetMapLevel(e.Name, e.Coords.X, e.Coords.Y);
@@ -354,6 +400,14 @@ namespace AutoTracker
             System.Diagnostics.ProcessStartInfo start = new System.Diagnostics.ProcessStartInfo(Program.appDataPath);
             start.UseShellExecute = true;
             System.Diagnostics.Process.Start(start);
+        }
+
+        private void mnuLayoutZ1m1_Click(object sender, EventArgs e) {
+            SetLayoutSelection(Settings.Layouts.Z1M1);
+        }
+
+        private void mnuLayoutCustom_Click(object sender, EventArgs e) {
+            SetLayoutSelection(Settings.Layouts.Custom);
         }
 
 

@@ -45,7 +45,7 @@ namespace AutoTracker
             string layoutFileDirectory;
             string layoutFileContents;
 
-            LoadLayoutFile(out layoutFileContents, out layoutFileDirectory);
+            LoadExternalLayoutFile(out layoutFileContents, out layoutFileDirectory);
 
             var layout = LayoutFileParser.Parse(layoutFileContents, true);
             if (layoutFileDirectory != null) {
@@ -64,7 +64,12 @@ namespace AutoTracker
             SaveSettings();
         }
 
-        private static void LoadLayoutFile(out string layoutFileContents, out string layoutFileDirectory) {
+        /// <summary>
+        /// Loads the external layout file, if present. Falls back to the internal layout file if no external layout is found.
+        /// </summary>
+        /// <param name="layoutFileContents"></param>
+        /// <param name="layoutFileDirectory"></param>
+        public static void LoadExternalLayoutFile(out string layoutFileContents, out string layoutFileDirectory) {
             string externalLayoutDirectory = appDataPath;
             string externalLayoutFile = Path.Combine(externalLayoutDirectory, "layout.json");
 

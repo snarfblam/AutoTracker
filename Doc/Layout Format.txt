@@ -123,6 +123,7 @@
     markerSets?: {                           // STACK with underlying map's markers
         name: string,
         source: string,                     // File name. The image will be divided into tiles matching the map's cell size to use for each level.
+        sizeMode?: string                   // 'normal', 'mini', or 'mixed', defaults to 'normal'
         picker?: {                          // Stamp selection UI. Currently, only one is permitted per layout.
             x: number,                      // Coordinates, in pixels, relative to top-left of layout background (i.e. does not include margins)
             y: number,                      // The picker is permitted to occupy the margin (partially or completely)

@@ -184,17 +184,32 @@ namespace AutoTracker
                     // Todo: draw any markers
                     for (var i = 0; i < this.markerSets.Count; i++) {
                         var mSet = this.markerSets[i];
-                        var markerState = this.owner.trackerDefinition.Meta.State.GetMarkers(this.markerSets[i].name, cell.X, cell.Y);
+                        var markerState = this.owner.trackerDefinition.Meta.State.GetAllMarkers(this.markerSets[i].name, cell.X, cell.Y);
+                        
                         var source = this.owner.trackerDefinition.Meta.GetImage(mSet.source);
                         var srcRect = new Rectangle(0, 0, cellWidth, cellHeight);
+                        var destRect = new Rectangle(rect.X + this.x, rect.Y + this.y, cellWidth, cellHeight);
+
                         for (var j = 0; j < markerState.Count; j++) {
-                            srcRect.X = markerState[j] * cellWidth;
-                            Renderer.Draw(source, srcRect, rect.X + x, rect.Y + y);
+                            srcRect.X = markerState[j].Value * cellWidth;
+                            var dest = ApplyQuadrant(destRect, markerState[j].Quad, cellWidth, cellHeight);
+                            Renderer.Bilinear = markerState[j].Quad != null;
+                            Renderer.Draw(source,srcRect, dest);
                         }
                     }
                 }
 
+                Renderer.Bilinear = false;
                 invalidCells.Clear();
+            }
+
+            private static Rectangle ApplyQuadrant(Rectangle destRect, CellQuadrant? quad, int cellWidth, int cellHeight) {
+                if (quad == null) return destRect;
+                destRect.Width /= 2;
+                destRect.Height /= 2;
+                if (quad == CellQuadrant.TopRight | quad == CellQuadrant.BottomRight) destRect.X += cellWidth / 2;
+                if (quad == CellQuadrant.BottomRight | quad == CellQuadrant.BottomLeft) destRect.Y += cellHeight / 2;
+                return destRect;
             }
 
             public void InvalidateAll() {
@@ -234,6 +249,17 @@ namespace AutoTracker
         public void Draw(Image img, Rectangle src, Point dest) {
             Draw(img, src, dest.X, dest.Y);
         }
+        public void Draw(Image img, Rectangle src, Rectangle dest) {
+            gfx.DrawImage(img, dest, src, GraphicsUnit.Pixel);
+        }
+
+        public bool Bilinear {
+            get { return gfx.InterpolationMode != System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor; }
+            set { gfx.InterpolationMode = value ? 
+                System.Drawing.Drawing2D.InterpolationMode.Bicubic :
+                System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor; }
+        }
+
 
         public void Dispose() {
             gfx.Dispose();
