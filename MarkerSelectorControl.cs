@@ -32,6 +32,15 @@ namespace AutoTracker
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.Opaque | ControlStyles.UserPaint, true);
         }
 
+        internal void ClearLayout() {
+            SelectedIndex = 0;
+            _scale = 1;
+            _layoutFile = null;
+            _layoutName = null; 
+            _markerSetPlacement = null;
+            _mapPlacement = null;
+        }
+
         public int SelectedIndex {
             get { return _selectedIndex; }
             set {
@@ -239,5 +248,7 @@ namespace AutoTracker
                 }
             }
         }
+
+
     }
 }

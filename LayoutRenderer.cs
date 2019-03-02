@@ -135,6 +135,7 @@ namespace AutoTracker
                 this.owner = owner;
                 this.placement = mapPlacement;
                 this.map = owner.trackerDefinition.maps[mapPlacement.name];
+                var metrics = owner.trackerDefinition.GetEffectiveMetrics(mapPlacement);
 
                 markerSets.AddRange(map.markerSets);
                 markerSets.AddRange(mapPlacement.markerSets);
@@ -147,7 +148,7 @@ namespace AutoTracker
                 gridHeight = map.gridHeight;
                 StateName = placement.stateName ?? map.stateName;
 
-                var placementBackgrounds = placement.backgrounds ?? new string[0];
+                var placementBackgrounds = placement.backgrounds ?? metrics.backgrounds ?? new string[0];
                 backgrounds = new Bitmap[placementBackgrounds.Length];
                 for (var i = 0; i < placementBackgrounds.Length; i++) backgrounds[i] = owner.trackerDefinition.Meta.GetImage(map.backgrounds[i]);
 

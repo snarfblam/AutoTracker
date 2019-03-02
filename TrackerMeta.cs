@@ -28,6 +28,9 @@ namespace AutoTracker
             }
         }
 
+        /// <summary>Uniquely identifies each tracker instantiated during runtime.</summary>
+        public int Index { get; set; }
+
         Dictionary<string, Bitmap> images = new Dictionary<string, Bitmap>();
 
         /// <summary>

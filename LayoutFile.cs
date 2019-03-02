@@ -25,6 +25,8 @@ namespace AutoTracker
         public static TrackerLayoutFile Parse(string json) {
             return Parse(json, false);
         }
+
+        static int parseIndex = 0;
         /// <summary>Deserializes layout data from a string.</summary>
         /// <returns></returns>
         /// <param name="json"></param>
@@ -49,6 +51,8 @@ namespace AutoTracker
             if (applyEffectiveValues) {
                 result.ApplyEffectiveValues();
             }
+            result.Meta.Index = parseIndex;
+            parseIndex++;
             return result;
         }
     }

@@ -47,17 +47,17 @@ namespace AutoTracker
 
             LoadExternalLayoutFile(out layoutFileContents, out layoutFileDirectory);
 
-            var layout = LayoutFileParser.Parse(layoutFileContents, true);
-            if (layoutFileDirectory != null) {
-                layout.Meta.RootPath = layoutFileDirectory;
-            }
+            //var layout = LayoutFileParser.Parse(layoutFileContents, true);
+            //if (layoutFileDirectory != null) {
+            //    layout.Meta.RootPath = layoutFileDirectory;
+            //}
 
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             var mainFrm = new Form1();
-            mainFrm.setLayout(layout);
+            //mainFrm.setLayout(layout);
 
             Application.Run(mainFrm);
 

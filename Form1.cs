@@ -53,6 +53,8 @@ namespace AutoTracker
 
 
             this.Text = this.Text.Replace("@", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.Minor.ToString());
+            LoadSettings();
+            SetLayoutSelection(Program.Settings.layout);
 
         }
 
@@ -62,20 +64,21 @@ namespace AutoTracker
             trackerUI.LayoutName = "zelda";
             ApplyLayoutExternalMetrics(layout.layouts["zelda"]);
 
-
+            mscMarkers.ClearLayout();
             mscMarkers.LayoutFile = layout;
             mscMarkers.LayoutName = "zelda";
             mscMarkers.MarkerSetPlacement = layout.layouts["zelda"].maps[0].markerSets[0];
             //mscMarkers.MarkerSetName = mscMarkers.MarkerSetPlacement.name;
             mscMarkers.MapPlacement = layout.layouts["zelda"].maps[0];
 
+            mscMetMarkers.ClearLayout();
             mscMetMarkers.LayoutFile = layout;
             mscMetMarkers.LayoutName = "metroid";
             mscMetMarkers.MarkerSetPlacement = layout.layouts["metroid"].maps[0].markerSets[0];
             //mscMetMarkers.MarkerSetName = mscMetMarkers.MarkerSetPlacement.name;
             mscMetMarkers.MapPlacement = layout.layouts["metroid"].maps[0];
 
-            LoadSettings();
+            //LoadSettings();
 
         }
 
@@ -89,7 +92,6 @@ namespace AutoTracker
 
         private void LoadSettings() {
             SetCheeseburgerVisible(!Program.Settings.hideBurger);
-            SetLayoutSelection(Program.Settings.layout);
             SetTrackingMode(Program.Settings.autoTrack);
         }
 
@@ -101,17 +103,19 @@ namespace AutoTracker
 
                 string layoutData, layoutRoot;
                 Program.LoadExternalLayoutFile(out layoutData, out layoutRoot);
-                var layoutObj = LayoutFileParser.Parse(layoutData);
+                var layoutObj = LayoutFileParser.Parse(layoutData, true);
 
                 if (layoutRoot != null) {
                     layoutObj.Meta.RootPath = layoutRoot;
                 }
+
+                setLayout(layoutObj);
             } else { //if (layout == Settings.Layouts.Z1M1) { 
                 // Catch all
                 Program.Settings.layout = Settings.Layouts.Z1M1;
                 mnuLayoutCustom.Checked = false;
                 mnuLayoutZ1m1.Checked = true;
-                setLayout(LayoutFileParser.Parse(AutoTracker.Properties.Resources.z1m1PackedLayout));
+                setLayout(LayoutFileParser.Parse(AutoTracker.Properties.Resources.z1m1PackedLayout, true));
             }
         }
 

@@ -54,6 +54,8 @@ namespace AutoTracker
             set {
                 if (value == _layoutFile) return;
                 _layoutFile = value;
+                foreach (var view in cachedViews.Values) view.Dispose();
+                cachedViews.Clear();
                 InitializeTracker();
             }
         }
@@ -135,6 +137,7 @@ namespace AutoTracker
                     picker.y + margin.top,
                     picker.width.Value, picker.height.Value);
 
+                pickerControl.ClearLayout();
                 pickerControl.LayoutFile = _layoutFile;
                 pickerControl.LayoutName = _layoutName;
                 pickerControl.MarkerSetPlacement = markerSet;
